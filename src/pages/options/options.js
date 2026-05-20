@@ -83,6 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "customCSS",
     "enableKeyboardNav",
     "openInNewTab",
+    "defaultSearchEngine",
   ];
 
   let settingsJsonStr =
@@ -279,6 +280,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const openInNewTabCheckbox = document.getElementById("open-in-new-tab");
   if (openInNewTabCheckbox) {
     openInNewTabCheckbox.checked = !!settings["openInNewTab"];
+  }
+
+  const defaultSearchEngineSelect = document.getElementById("default-search-engine");
+  if (defaultSearchEngineSelect && settings["defaultSearchEngine"]) {
+    defaultSearchEngineSelect.value = settings["defaultSearchEngine"];
   }
 
   function updateCustomizeDependency() {
@@ -675,6 +681,8 @@ document.addEventListener("DOMContentLoaded", () => {
         ).checked;
       } else if (key === "openInNewTab") {
         settings_obj[key] = document.getElementById("open-in-new-tab").checked;
+      } else if (key === "defaultSearchEngine") {
+        settings_obj[key] = document.getElementById("default-search-engine").value;
       } else if (key === "clockFormat") {
         const radio = document.querySelector(
           'input[name="clock-format"]:checked',

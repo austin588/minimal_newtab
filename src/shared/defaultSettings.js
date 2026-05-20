@@ -37,7 +37,8 @@ const defaultSettings = {
     "sidebarShowCustomize": true,
     "customCSS": "",
     "enableKeyboardNav": false,
-    "openInNewTab": false
+    "openInNewTab": false,
+    "defaultSearchEngine": "google"
 }
 
 const icons = {

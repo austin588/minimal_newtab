@@ -18,6 +18,34 @@
   let searchPending = false;
   let debounceTimer = null;
   let modifierKey = null;
+  let isBangMode = false;
+  let currentBangSuggestions = [];
+
+  const BANGS = [
+    { trigger: "g", name: "Google", domain: "google.com", searchUrl: "https://www.google.com/search?q={query}", homeUrl: "https://www.google.com" },
+    { trigger: "yt", name: "YouTube", domain: "youtube.com", searchUrl: "https://www.youtube.com/results?search_query={query}", homeUrl: "https://www.youtube.com" },
+    { trigger: "w", name: "Wikipedia", domain: "en.wikipedia.org", searchUrl: "https://en.wikipedia.org/w/index.php?search={query}", homeUrl: "https://en.wikipedia.org" },
+    { trigger: "gh", name: "GitHub", domain: "github.com", searchUrl: "https://github.com/search?q={query}", homeUrl: "https://github.com" },
+    { trigger: "r", name: "Reddit", domain: "reddit.com", searchUrl: "https://www.reddit.com/search/?q={query}", homeUrl: "https://www.reddit.com" },
+    { trigger: "tw", name: "X / Twitter", domain: "x.com", searchUrl: "https://x.com/search?q={query}", homeUrl: "https://x.com" },
+    { trigger: "a", name: "Amazon", domain: "amazon.com", searchUrl: "https://www.amazon.com/s?k={query}", homeUrl: "https://www.amazon.com" },
+    { trigger: "so", name: "Stack Overflow", domain: "stackoverflow.com", searchUrl: "https://stackoverflow.com/search?q={query}", homeUrl: "https://stackoverflow.com" },
+    { trigger: "mdn", name: "MDN Web Docs", domain: "developer.mozilla.org", searchUrl: "https://developer.mozilla.org/en-US/search?q={query}", homeUrl: "https://developer.mozilla.org" },
+    { trigger: "npm", name: "npm", domain: "npmjs.com", searchUrl: "https://www.npmjs.com/search?q={query}", homeUrl: "https://www.npmjs.com" },
+    { trigger: "pypi", name: "PyPI", domain: "pypi.org", searchUrl: "https://pypi.org/search/?q={query}", homeUrl: "https://pypi.org" },
+    { trigger: "maps", name: "Google Maps", domain: "google.com/maps", searchUrl: "https://www.google.com/maps?q={query}", homeUrl: "https://www.google.com/maps" },
+    { trigger: "imdb", name: "IMDb", domain: "imdb.com", searchUrl: "https://www.imdb.com/find?q={query}", homeUrl: "https://www.imdb.com" },
+    { trigger: "duck", name: "DuckDuckGo", domain: "duckduckgo.com", searchUrl: "https://duckduckgo.com/?q={query}", homeUrl: "https://duckduckgo.com" },
+    { trigger: "b", name: "Bing", domain: "bing.com", searchUrl: "https://www.bing.com/search?q={query}", homeUrl: "https://www.bing.com" },
+  ];
+
+  const DEFAULT_SEARCH_ENGINES = {
+    google: { name: "Google", searchUrl: "https://www.google.com/search?q={query}" },
+    duckduckgo: { name: "DuckDuckGo", searchUrl: "https://duckduckgo.com/?q={query}" },
+    bing: { name: "Bing", searchUrl: "https://www.bing.com/search?q={query}" },
+    brave: { name: "Brave Search", searchUrl: "https://search.brave.com/search?q={query}" },
+    startpage: { name: "Startpage", searchUrl: "https://www.startpage.com/do/dsearch?query={query}" },
+  };
 
   (function initModifierKey() {
     if (typeof chrome !== 'undefined' && chrome.commands && chrome.commands.getAll) {
@@ -52,6 +80,60 @@
       }
     }
     return queryIndex === query.length;
+  }
+
+  function parseBangInput(value) {
+    if (!value.startsWith("!")) return null;
+
+    const spaceIndex = value.indexOf(" ");
+    let trigger, query, hasSpace, bang;
+
+    if (spaceIndex === -1) {
+      trigger = value.slice(1);
+      query = "";
+      hasSpace = false;
+    } else {
+      trigger = value.slice(1, spaceIndex);
+      query = value.slice(spaceIndex + 1);
+      hasSpace = true;
+    }
+
+    if (trigger) {
+      bang = BANGS.find((b) => b.trigger === trigger) || null;
+    } else {
+      bang = null;
+    }
+
+    return { bang, trigger, query: query.trim(), hasSpace };
+  }
+
+  function executeBangSearch(bang, query) {
+    if (!bang) return;
+    const url = query
+      ? bang.searchUrl.replace("{query}", encodeURIComponent(query))
+      : bang.homeUrl;
+    openLink(url);
+  }
+
+  function getDefaultSearchUrl(query) {
+    if (!query) return null;
+    const settings = JSON.parse(localStorage.getItem("settings") || "{}");
+    const engineId = settings.defaultSearchEngine || "google";
+    const engine = DEFAULT_SEARCH_ENGINES[engineId] || DEFAULT_SEARCH_ENGINES.google;
+    return engine.searchUrl.replace("{query}", encodeURIComponent(query));
+  }
+
+  function executeDefaultSearch(query) {
+    const url = getDefaultSearchUrl(query);
+    if (url) openLink(url);
+  }
+
+  function insertBangAndFocus(trigger) {
+    if (!inputElement || !trigger) return;
+    inputElement.value = "!" + trigger + " ";
+    inputElement.selectionStart = inputElement.selectionEnd = inputElement.value.length;
+    inputElement.dispatchEvent(new Event("input"));
+    requestAnimationFrame(() => focusInput());
   }
 
   function flattenBookmarks(nodes, path = []) {
@@ -95,6 +177,10 @@
     const shortcuts = document.getElementById("shortcuts");
     if (!shortcuts) return [];
 
+    if (isSearchMode && isBangMode && currentBangSuggestions.length > 0) {
+      return currentBangSuggestions;
+    }
+
     if (isSearchMode) {
       return Array.from(shortcuts.querySelectorAll(`.${SEARCH_RESULT_CLASS}`));
     }
@@ -134,16 +220,26 @@
   function updateSelection() {
     const navItems = getNavigationItems();
     navItems.forEach((item, index) => {
-      const shortcut = item.classList.contains(SEARCH_RESULT_CLASS)
-        ? item.querySelector(".shortcut")
-        : item;
-
       if (index === currentIndex) {
-        if (shortcut) shortcut.classList.add(SELECTED_CLASS);
+        if (isBangMode) {
+          item.classList.add(SELECTED_CLASS);
+        } else {
+          const shortcut = item.classList.contains(SEARCH_RESULT_CLASS)
+            ? item.querySelector(".shortcut")
+            : item;
+          if (shortcut) shortcut.classList.add(SELECTED_CLASS);
+        }
         item.scrollIntoView({ block: "nearest", behavior: "smooth" });
         currentItem = navItems[currentIndex];
       } else {
-        if (shortcut) shortcut.classList.remove(SELECTED_CLASS);
+        if (isBangMode) {
+          item.classList.remove(SELECTED_CLASS);
+        } else {
+          const shortcut = item.classList.contains(SEARCH_RESULT_CLASS)
+            ? item.querySelector(".shortcut")
+            : item;
+          if (shortcut) shortcut.classList.remove(SELECTED_CLASS);
+        }
       }
     });
   }
@@ -173,7 +269,7 @@
       .forEach((el) => el.remove());
   }
 
-  function renderSearchResults(query) {
+  function renderSearchResults(query, bangInfo) {
     if (!query || query.length === 0) return;
 
     const shortcuts = document.getElementById("shortcuts");
@@ -186,6 +282,37 @@
 
     const settings = JSON.parse(localStorage.getItem("settings") || "{}");
     const bookmarkFolder = settings.bookmarkFolder?.trim();
+
+    const hasBang = bangInfo && bangInfo.bang && bangInfo.hasSpace;
+
+    if (hasBang) {
+      resultsContainer.innerHTML = "";
+
+      const bangEl = document.createElement("li");
+      bangEl.className = `bookmark-link-item ${SEARCH_RESULT_CLASS} bang-search-result`;
+
+      const a = document.createElement("a");
+      a.className = "shortcut";
+      a.href = bangInfo.bang.searchUrl.replace(
+        "{query}",
+        encodeURIComponent(bangInfo.query),
+      );
+
+      const contentSpan = document.createElement("span");
+      contentSpan.className = "content";
+      const titleSpan = document.createElement("span");
+      titleSpan.className = "title";
+      titleSpan.textContent = bangInfo.query
+        ? `Search ${bangInfo.bang.name} for "${bangInfo.query}"`
+        : `Go to ${bangInfo.bang.domain}`;
+      contentSpan.appendChild(titleSpan);
+      a.appendChild(contentSpan);
+      bangEl.appendChild(a);
+      resultsContainer.appendChild(bangEl);
+
+      requestAnimationFrame(() => focusInput());
+      return;
+    }
 
     searchPending = true;
 
@@ -213,10 +340,34 @@
       resultsContainer.innerHTML = "";
 
       if (searchResults.length === 0) {
-        const noResults = document.createElement("div");
-        noResults.className = "no-results";
-        noResults.textContent = "No results found";
-        resultsContainer.appendChild(noResults);
+        const defaultUrl = getDefaultSearchUrl(query);
+        if (defaultUrl) {
+          const settings = JSON.parse(localStorage.getItem("settings") || "{}");
+          const engineId = settings.defaultSearchEngine || "google";
+          const engine = DEFAULT_SEARCH_ENGINES[engineId] || DEFAULT_SEARCH_ENGINES.google;
+
+          const el = document.createElement("li");
+          el.className = `bookmark-link-item ${SEARCH_RESULT_CLASS} default-search-result`;
+
+          const a = document.createElement("a");
+          a.className = "shortcut";
+          a.href = defaultUrl;
+
+          const contentSpan = document.createElement("span");
+          contentSpan.className = "content";
+          const titleSpan = document.createElement("span");
+          titleSpan.className = "title";
+          titleSpan.textContent = `Search ${engine.name} for "${query}"`;
+          contentSpan.appendChild(titleSpan);
+          a.appendChild(contentSpan);
+          el.appendChild(a);
+          resultsContainer.appendChild(el);
+        } else {
+          const noResults = document.createElement("div");
+          noResults.className = "no-results";
+          noResults.textContent = "No results found";
+          resultsContainer.appendChild(noResults);
+        }
         requestAnimationFrame(() => focusInput());
         return;
       }
@@ -267,6 +418,57 @@
     });
   }
 
+  function renderBangSuggestions(trigger) {
+    const resultsContainer = document.getElementById("search-results-container");
+    if (!resultsContainer) return;
+
+    resultsContainer.innerHTML = "";
+
+    const matchingBangs = trigger
+      ? BANGS.filter(
+          (b) =>
+            b.trigger.includes(trigger) ||
+            b.name.toLowerCase().includes(trigger),
+        )
+      : BANGS;
+
+    if (matchingBangs.length === 0) {
+      const noResults = document.createElement("div");
+      noResults.className = "no-results";
+      noResults.textContent = `No bang matches "!${trigger}"`;
+      resultsContainer.appendChild(noResults);
+      currentBangSuggestions = [];
+      requestAnimationFrame(() => focusInput());
+      return;
+    }
+
+    currentBangSuggestions = matchingBangs.map((bang) => {
+      const el = document.createElement("div");
+      el.className = "bang-suggestion";
+      el.dataset.bangTrigger = bang.trigger;
+
+      const triggerSpan = document.createElement("span");
+      triggerSpan.className = "bang-trigger";
+      triggerSpan.textContent = `!${bang.trigger}`;
+
+      const nameSpan = document.createElement("span");
+      nameSpan.className = "bang-name";
+      nameSpan.textContent = bang.name;
+
+      const domainSpan = document.createElement("span");
+      domainSpan.className = "bang-domain";
+      domainSpan.textContent = bang.domain;
+
+      el.appendChild(triggerSpan);
+      el.appendChild(nameSpan);
+      el.appendChild(domainSpan);
+      resultsContainer.appendChild(el);
+      return el;
+    });
+
+    requestAnimationFrame(() => focusInput());
+  }
+
   function enterSearchMode() {
     if (isSearchMode) return;
     isSearchMode = true;
@@ -297,6 +499,8 @@
   function exitSearchMode() {
     if (!isSearchMode) return;
     isSearchMode = false;
+    isBangMode = false;
+    currentBangSuggestions = [];
     searchResults = [];
     clearTimeout(debounceTimer);
 
@@ -484,18 +688,30 @@
 
   function navigateByNumber(num) {
     const index = num === "0" ? 9 : parseInt(num, 10) - 1;
-    if (isSearchMode) {
-      if (index >= 0 && index < searchResults.length) {
-        openLink(searchResults[index].url);
+
+    if (isSearchMode && isBangMode && currentBangSuggestions.length > 0) {
+      if (index >= 0 && index < currentBangSuggestions.length) {
+        const trigger = currentBangSuggestions[index].dataset.bangTrigger;
+        if (trigger) insertBangAndFocus(trigger);
       }
-    } else {
-      if (index >= 0 && index < allItems.length && allItems[index]) {
-        const link = allItems[index].querySelector("a") || allItems[index];
-        if (link.href) {
-          openLink(link.href);
-        } else {
-          allItems[index].click();
-        }
+      return;
+    }
+
+    if (isSearchMode) {
+      const navItems = getNavigationItems();
+      if (index >= 0 && index < navItems.length) {
+        const link = navItems[index].querySelector("a.shortcut");
+        if (link) openLink(link.href);
+      }
+      return;
+    }
+
+    if (index >= 0 && index < allItems.length && allItems[index]) {
+      const link = allItems[index].querySelector("a") || allItems[index];
+      if (link.href) {
+        openLink(link.href);
+      } else {
+        allItems[index].click();
       }
     }
   }
@@ -527,18 +743,36 @@
     }
 
     inputElement.addEventListener("input", (e) => {
-      const query = e.target.value;
+      const value = e.target.value;
+      const bangInfo = parseBangInput(value);
 
-      if (query.length > 0) {
+      if (bangInfo && bangInfo.bang && bangInfo.hasSpace) {
+        inputElement.placeholder = `Search ${bangInfo.bang.name}...`;
+      } else if (value.startsWith("!")) {
+        inputElement.placeholder = "Type a search query or select a bang below";
+      } else {
+        inputElement.placeholder = "Search your bookmarks...";
+      }
+
+      if (value.length > 0) {
         enterSearchMode();
         clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => {
-          renderSearchResults(query);
-        }, 100);
         currentIndex = -1;
         currentItem = null;
+
+        if (bangInfo && !bangInfo.hasSpace) {
+          isBangMode = true;
+          renderBangSuggestions(bangInfo.trigger);
+        } else {
+          isBangMode = false;
+          debounceTimer = setTimeout(() => {
+            renderSearchResults(value, bangInfo);
+          }, 100);
+        }
       } else {
         clearTimeout(debounceTimer);
+        isBangMode = false;
+        currentBangSuggestions = [];
         exitSearchMode();
         currentIndex = -1;
         currentItem = null;
@@ -571,37 +805,64 @@
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       moveSelection(-1);
-    } else if (e.key === "Enter" && currentIndex >= 0) {
-      const navItems = getNavigationItems();
+    } else if (e.key === "Enter") {
       e.preventDefault();
-      const item = navItems[currentIndex];
-      if (item) {
-        if (isSearchMode) {
-          const link = item.querySelector("a");
-          if (link) {
-            openLink(link.href);
+      const inputValue = inputElement ? inputElement.value : "";
+      const bangInfo = parseBangInput(inputValue);
+
+      if (currentIndex >= 0) {
+        const navItems = getNavigationItems();
+        const item = navItems[currentIndex];
+        if (item) {
+          if (isBangMode) {
+            const trigger = item.dataset.bangTrigger;
+            if (trigger) {
+              insertBangAndFocus(trigger);
+            }
+            return;
           }
-        } else {
-          const link =
-            item.querySelector("a") || (item.tagName === "A" ? item : null);
-          if (link && link.href) {
-            openLink(link.href);
+          if (isSearchMode) {
+            const link = item.querySelector("a");
+            if (link) {
+              openLink(link.href);
+            }
           } else {
-            item.click();
+            const link =
+              item.querySelector("a") || (item.tagName === "A" ? item : null);
+            if (link && link.href) {
+              openLink(link.href);
+            } else {
+              item.click();
+            }
           }
+          return;
         }
       }
-    } else if (
-      e.key === "Enter" &&
-      isSearchMode &&
-      inputElement &&
-      inputElement.value.length > 0 &&
-      searchResults.length > 0
-    ) {
-      e.preventDefault();
-      const firstResult = searchResults[0];
-      if (firstResult && firstResult.url) {
-        openLink(firstResult.url);
+
+      if (bangInfo && bangInfo.bang && bangInfo.hasSpace) {
+        executeBangSearch(bangInfo.bang, bangInfo.query);
+        return;
+      }
+
+      if (bangInfo && bangInfo.bang && !bangInfo.hasSpace) {
+        openLink(bangInfo.bang.homeUrl);
+        return;
+      }
+
+      if (
+        isSearchMode &&
+        inputValue.length > 0 &&
+        searchResults.length > 0
+      ) {
+        const firstResult = searchResults[0];
+        if (firstResult && firstResult.url) {
+          openLink(firstResult.url);
+        }
+        return;
+      }
+
+      if (isSearchMode && inputValue.length > 0) {
+        executeDefaultSearch(inputValue);
       }
     }
   }
@@ -664,6 +925,8 @@
   function hideOverlay() {
     isActive = false;
     isSearchMode = false;
+    isBangMode = false;
+    currentBangSuggestions = [];
     clearSelection();
     clearNumberHints();
     searchPending = false;
