@@ -1,4 +1,4 @@
-import { state, INPUT_ID, SEARCH_MODE_CLASS, SEARCH_RESULT_CLASS, NUMBER_HINT_CLASS, focusInput } from "../overlay-state/overlay-state.js";
+import { state, INPUT_ID, SEARCH_MODE_CLASS, SEARCH_RESULT_CLASS, NUMBER_HINT_CLASS, focusInput } from "../overlay/overlay-state.js";
 import { BANGS, parseBangInput, getDefaultSearchUrl, DEFAULT_SEARCH_ENGINES } from "../bangs/bangs.js";
 import { setupFolderListeners, getAllItems, renderNumberHints } from "../navigation/navigation.js";
 

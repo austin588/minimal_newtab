@@ -1,4 +1,4 @@
-import { state, focusInput } from "../overlay-state/overlay-state.js";
+import { state, focusInput } from "../overlay/overlay-state.js";
 
 export const BANGS = [
   { trigger: "g", name: "Google", domain: "google.com", searchUrl: "https://www.google.com/search?q={query}", homeUrl: "https://www.google.com" },
