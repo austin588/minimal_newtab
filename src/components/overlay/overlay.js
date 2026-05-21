@@ -1,7 +1,7 @@
-import { state, INPUT_ID, SELECTED_CLASS, SEARCH_MODE_CLASS, focusInput, ensureFocus } from "./overlay-state.js";
-import { parseBangInput, getBangSearchUrl, getDefaultSearchUrl, renderBangSuggestions, insertBangAndFocus } from "./bangs.js";
-import { renderSearchResults, enterSearchMode, exitSearchMode } from "./search.js";
-import { getAllItems, getNavigationItems, renderNumberHints, clearSelection, clearNumberHints, moveSelection, navigateByNumber, setupFolderListeners } from "./navigation.js";
+import { state, INPUT_ID, SELECTED_CLASS, SEARCH_MODE_CLASS, focusInput, ensureFocus } from "../overlay-state/overlay-state.js";
+import { parseBangInput, getBangSearchUrl, getDefaultSearchUrl, renderBangSuggestions, insertBangAndFocus } from "../bangs/bangs.js";
+import { renderSearchResults, enterSearchMode, exitSearchMode } from "../search/search.js";
+import { getAllItems, getNavigationItems, renderNumberHints, clearSelection, clearNumberHints, moveSelection, navigateByNumber, setupFolderListeners } from "../navigation/navigation.js";
 
 (function () {
   "use strict";

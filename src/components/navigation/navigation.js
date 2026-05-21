@@ -1,5 +1,5 @@
-import { state, SELECTED_CLASS, NUMBER_HINT_CLASS, SEARCH_RESULT_CLASS } from "./overlay-state.js";
-import { insertBangAndFocus } from "./bangs.js";
+import { state, SELECTED_CLASS, NUMBER_HINT_CLASS, SEARCH_RESULT_CLASS } from "../overlay-state/overlay-state.js";
+import { insertBangAndFocus } from "../bangs/bangs.js";
 
 export function getAllItems() {
   const shortcuts = document.getElementById("shortcuts");

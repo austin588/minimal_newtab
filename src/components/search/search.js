@@ -1,6 +1,6 @@
-import { state, INPUT_ID, SEARCH_MODE_CLASS, SEARCH_RESULT_CLASS, NUMBER_HINT_CLASS, focusInput } from "./overlay-state.js";
-import { BANGS, parseBangInput, getDefaultSearchUrl, DEFAULT_SEARCH_ENGINES } from "./bangs.js";
-import { setupFolderListeners, getAllItems, renderNumberHints } from "./navigation.js";
+import { state, INPUT_ID, SEARCH_MODE_CLASS, SEARCH_RESULT_CLASS, NUMBER_HINT_CLASS, focusInput } from "../overlay-state/overlay-state.js";
+import { BANGS, parseBangInput, getDefaultSearchUrl, DEFAULT_SEARCH_ENGINES } from "../bangs/bangs.js";
+import { setupFolderListeners, getAllItems, renderNumberHints } from "../navigation/navigation.js";
 
 export function fuzzyMatch(text, query) {
   text = text.toLowerCase();
