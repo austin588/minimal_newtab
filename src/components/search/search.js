@@ -48,8 +48,9 @@ export function renderSearchResults(query, bangInfo) {
 
   const settings = JSON.parse(localStorage.getItem("settings") || "{}");
   const bookmarkFolder = settings.bookmarkFolder?.trim();
+  const enableBangs = settings.enableBangs !== false;
 
-  const hasBang = bangInfo && bangInfo.bang && bangInfo.hasSpace;
+  const hasBang = enableBangs && bangInfo && bangInfo.bang && bangInfo.hasSpace;
 
   if (hasBang) {
     resultsContainer.innerHTML = "";

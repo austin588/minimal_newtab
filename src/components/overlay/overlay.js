@@ -51,11 +51,15 @@ import { getAllItems, getNavigationItems, renderNumberHints, clearSelection, cle
 
     state.inputElement.addEventListener("input", (e) => {
       const value = e.target.value;
-      const bangInfo = parseBangInput(value);
+      const settings = JSON.parse(localStorage.getItem("settings") || "{}");
+      const enableBangs = settings.enableBangs !== false;
+      let bangInfo = parseBangInput(value);
+
+      if (!enableBangs) bangInfo = null;
 
       if (bangInfo && bangInfo.bang && bangInfo.hasSpace) {
         state.inputElement.placeholder = `Search ${bangInfo.bang.name}...`;
-      } else if (value.startsWith("!")) {
+      } else if (enableBangs && value.startsWith("!")) {
         state.inputElement.placeholder = "Type a search query or select a bang below";
       } else {
         state.inputElement.placeholder = "Search your bookmarks...";
@@ -115,7 +119,11 @@ import { getAllItems, getNavigationItems, renderNumberHints, clearSelection, cle
     } else if (e.key === "Enter") {
       e.preventDefault();
       const inputValue = state.inputElement ? state.inputElement.value : "";
-      const bangInfo = parseBangInput(inputValue);
+      const settings = JSON.parse(localStorage.getItem("settings") || "{}");
+      const enableBangs = settings.enableBangs !== false;
+      let bangInfo = parseBangInput(inputValue);
+
+      if (!enableBangs) bangInfo = null;
 
       if (state.currentIndex >= 0) {
         const navItems = getNavigationItems();

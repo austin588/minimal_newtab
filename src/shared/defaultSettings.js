@@ -37,6 +37,7 @@ const defaultSettings = {
     "sidebarShowCustomize": true,
     "customCSS": "",
     "enableKeyboardNav": false,
+    "enableBangs": true,
     "openInNewTab": false,
     "defaultSearchEngine": "google"
 }
