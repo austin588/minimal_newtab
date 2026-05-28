@@ -82,7 +82,9 @@ document.addEventListener("DOMContentLoaded", () => {
     "showUnsplashRefresh",
     "customCSS",
     "enableKeyboardNav",
+    "enableBangs",
     "openInNewTab",
+    "defaultSearchEngine",
   ];
 
   let settingsJsonStr =
@@ -213,6 +215,11 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("enable-keyboard-nav").checked = true;
   }
 
+  // Initialize bang search setting
+  if (settings["enableBangs"] !== false) {
+    document.getElementById("enable-bangs").checked = true;
+  }
+
   // Dynamically display the current keyboard shortcuts
   function formatShortcut(key) {
     let s = key.replace(/Comma/g, ",");
@@ -279,6 +286,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const openInNewTabCheckbox = document.getElementById("open-in-new-tab");
   if (openInNewTabCheckbox) {
     openInNewTabCheckbox.checked = !!settings["openInNewTab"];
+  }
+
+  const defaultSearchEngineSelect = document.getElementById("default-search-engine");
+  if (defaultSearchEngineSelect && settings["defaultSearchEngine"]) {
+    defaultSearchEngineSelect.value = settings["defaultSearchEngine"];
   }
 
   function updateCustomizeDependency() {
@@ -673,8 +685,12 @@ document.addEventListener("DOMContentLoaded", () => {
         settings_obj[key] = document.getElementById(
           "enable-keyboard-nav",
         ).checked;
+      } else if (key === "enableBangs") {
+        settings_obj[key] = document.getElementById("enable-bangs").checked;
       } else if (key === "openInNewTab") {
         settings_obj[key] = document.getElementById("open-in-new-tab").checked;
+      } else if (key === "defaultSearchEngine") {
+        settings_obj[key] = document.getElementById("default-search-engine").value;
       } else if (key === "clockFormat") {
         const radio = document.querySelector(
           'input[name="clock-format"]:checked',
