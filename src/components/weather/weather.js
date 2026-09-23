@@ -13,20 +13,29 @@ const weatherCodes = {
     95: "Thunderstorm", 96: "Thunderstorm w/ hail", 99: "Severe thunderstorm"
 };
 
+const WEATHER_FRESH_MS = 30 * 60 * 1000;
+
+// True once last-known weather is on screen; a failed refresh then keeps it
+// instead of replacing it with an error
+let showingCached = false;
+
+function showWeatherMessage(message) {
+    if (!showingCached) document.getElementById('weather').textContent = message;
+}
+
+function readWeatherCache(tempUnit) {
+    try {
+        const cached = JSON.parse(localStorage.getItem('weatherData'));
+        // Ignore a reading taken in the other unit
+        if (!cached || (cached.tempUnit && cached.tempUnit !== tempUnit)) return null;
+        return cached;
+    } catch {
+        return null;
+    }
+}
+
 function fetchWeatherAndCity(lat, lon, tempUnit = 'celsius') {
     const now = new Date();
-    const cachedWeather = localStorage.getItem('weatherData');
-    
-    if (cachedWeather) {
-        const weatherData = JSON.parse(cachedWeather);
-        if ((now - new Date(weatherData.timestamp)) < 30 * 60 * 1000) {
-            document.getElementById('weather').textContent = weatherData.text;
-            const city = weatherData.text.split(': ')[0];
-            setWeatherClickable(city);
-            return;
-        }
-    }
-
     const tempUnitParam = tempUnit === 'fahrenheit' ? '&temperature_unit=fahrenheit' : '';
 
     fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true${tempUnitParam}`)
@@ -47,33 +56,20 @@ function fetchWeatherAndCity(lat, lon, tempUnit = 'celsius') {
                     
                     localStorage.setItem('weatherData', JSON.stringify({
                         text: weatherString,
-                        timestamp: now.toISOString()
+                        timestamp: now.toISOString(),
+                        tempUnit
                     }));
                 })
                 .catch(() => {
+                    if (showingCached) return;
                     document.getElementById('weather').textContent = weatherText;
                     setWeatherClickable("your area");
                 });
         })
-        .catch(() => {
-            document.getElementById('weather').textContent = "Unable to fetch weather.";
-        });
+        .catch(() => showWeatherMessage("Unable to fetch weather."));
 }
 
 function fetchWeatherByCity(city, tempUnit = 'celsius') {
-    const now = new Date();
-    const cachedWeather = localStorage.getItem('weatherData');
-    
-    if (cachedWeather) {
-        const weatherData = JSON.parse(cachedWeather);
-        if ((now - new Date(weatherData.timestamp)) < 30 * 60 * 1000) {
-            document.getElementById('weather').textContent = weatherData.text;
-            const cityFromCache = weatherData.text.split(': ')[0];
-            setWeatherClickable(cityFromCache);
-            return;
-        }
-    }
-
     fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city)}`)
         .then(res => res.json())
         .then(data => {
@@ -81,18 +77,29 @@ function fetchWeatherByCity(city, tempUnit = 'celsius') {
                 const { lat, lon } = data[0];
                 fetchWeatherAndCity(lat, lon, tempUnit);
             } else {
-                document.getElementById('weather').textContent = "City not found";
+                showWeatherMessage("City not found");
             }
         })
-        .catch(() => {
-            document.getElementById('weather').textContent = "Unable to fetch weather";
-        });
+        .catch(() => showWeatherMessage("Unable to fetch weather"));
 }
 
 function renderWeather(settings) {
-    document.getElementById('weather').textContent = "Fetching weather...";
     const useCustomCity = settings.useCustomCity;
     const tempUnit = settings.tempUnit || 'celsius';
+
+    // Show the last reading immediately; only go to the network when it's stale
+    const cached = readWeatherCache(tempUnit);
+    if (cached) {
+        document.getElementById('weather').textContent = cached.text;
+        setWeatherClickable(cached.text.split(': ')[0]);
+        showingCached = true;
+        if (Date.now() - new Date(cached.timestamp) < WEATHER_FRESH_MS) return;
+    } else {
+        document.getElementById('weather').textContent = "Fetching weather...";
+    }
+
+    // Accept a recent location fix instead of waiting on a fresh one
+    const geoOptions = { maximumAge: WEATHER_FRESH_MS, timeout: 15000 };
     if (useCustomCity && settings.customCity) {
         const customCity = settings.customCity;
         fetchWeatherByCity(customCity, tempUnit);
@@ -100,17 +107,19 @@ function renderWeather(settings) {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 pos => fetchWeatherAndCity(pos.coords.latitude, pos.coords.longitude, tempUnit),
-                (err) => {
+                () => {
                     setTimeout(() => {
                         navigator.geolocation.getCurrentPosition(
                             pos => fetchWeatherAndCity(pos.coords.latitude, pos.coords.longitude, tempUnit),
-                            () => document.getElementById('weather').textContent = "Location access denied."
+                            () => showWeatherMessage("Location access denied."),
+                            geoOptions
                         );
                     }, 100);
-                }
+                },
+                geoOptions
             );
         } else {
-            document.getElementById('weather').textContent = "Geolocation not supported.";
+            showWeatherMessage("Geolocation not supported.");
         }
     }
 }

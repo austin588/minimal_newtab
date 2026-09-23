@@ -36,23 +36,52 @@ function applyTheme(theme) {
   }
 }
 
+// Remember the text color picked for a background so the next tab paints it
+// immediately instead of re-analysing the image
+function textColorCacheKey(imageUrl) {
+  return `${imageUrl.length}:${imageUrl.slice(0, 80)}${imageUrl.slice(-40)}`;
+}
+
+function cachedTextColor(imageUrl) {
+  try {
+    const cached = JSON.parse(localStorage.getItem("bgTextColor"));
+    return cached && cached.key === textColorCacheKey(imageUrl) ? cached.color : null;
+  } catch {
+    return null;
+  }
+}
+
+// Paint a background (and its known text color) right away
+function applyBackground(imageUrl) {
+  const style = document.body.style;
+  style.backgroundImage = `url("${imageUrl}")`;
+  style.backgroundSize = "cover";
+  style.backgroundPosition = "center";
+  const color = cachedTextColor(imageUrl);
+  if (color) style.color = color;
+}
+
 function analyzeAndSetTextColor(imageUrl) {
+  const known = cachedTextColor(imageUrl);
+  if (known) {
+    document.body.style.color = known;
+    return;
+  }
+
   const img = new Image();
   img.crossOrigin = "Anonymous";
   img.src = imageUrl;
 
   img.onload = () => {
+    // A small thumbnail gives the same average brightness at a fraction of the cost
+    const size = 32;
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d", { willReadFrequently: true });
-    canvas.width = img.width;
-    canvas.height = img.height;
-    ctx.drawImage(img, 0, 0);
-
-    const x = Math.floor(img.width / 4);
-    const y = Math.floor(img.height / 4);
-    const width = Math.floor(img.width / 2);
-    const height = Math.floor(img.height / 2);
-    const imageData = ctx.getImageData(x, y, width, height).data;
+    canvas.width = size;
+    canvas.height = size;
+    // Sample the middle half of the image, where the clock and columns sit
+    ctx.drawImage(img, img.width / 4, img.height / 4, img.width / 2, img.height / 2, 0, 0, size, size);
+    const imageData = ctx.getImageData(0, 0, size, size).data;
 
     let r = 0,
       g = 0,
@@ -67,6 +96,12 @@ function analyzeAndSetTextColor(imageUrl) {
       0.299 * (r / pixelCount) +
       0.587 * (g / pixelCount) +
       0.114 * (b / pixelCount);
-    document.body.style.color = luminance > 128 ? "#222" : "#f0f0f0";
+    const color = luminance > 128 ? "#222" : "#f0f0f0";
+    document.body.style.color = color;
+    try {
+      localStorage.setItem("bgTextColor", JSON.stringify({ key: textColorCacheKey(imageUrl), color }));
+    } catch {
+      /* storage full; the color still applies to this tab */
+    }
   };
 }

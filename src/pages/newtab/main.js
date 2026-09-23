@@ -47,13 +47,8 @@ const useUnsplash = settings.useUnsplash && !!settings.unsplashApiKey;
 if (useUnsplash) {
   renderUnsplashBackground(settings);
 } else if (settings.backgroundImage) {
-  document.body.style.backgroundImage = `url(${settings.backgroundImage})`;
+  applyBackground(settings.backgroundImage);
   analyzeAndSetTextColor(settings.backgroundImage);
-}
-
-if (useUnsplash || settings.backgroundImage) {
-  document.body.style.backgroundSize = "cover";
-  document.body.style.backgroundPosition = "center";
 }
 
 if (settings.topRight) {

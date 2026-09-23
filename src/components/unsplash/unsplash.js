@@ -11,6 +11,13 @@ function displayPhotoCredit(photoData) {
     }
 }
 
+// The original upload is often 5-10MB; ask Unsplash for one sized to this screen
+function screenSizedUrl(photo) {
+    if (!photo.urls.raw) return photo.urls.full;
+    const width = Math.min(3840, Math.round(window.screen.width * (window.devicePixelRatio || 1)));
+    return `${photo.urls.raw}&w=${width}&q=80&fm=jpg&fit=max`;
+}
+
 async function renderUnsplashBackground(settings, forceRefresh = false) {
     const now = new Date();
     const cachedData = localStorage.getItem('unsplashData');
@@ -38,49 +45,40 @@ async function renderUnsplashBackground(settings, forceRefresh = false) {
         document.getElementById('refresh-background').style.display = 'inline-flex';
     }
 
-    if (cachedData && !forceRefresh) {
-        const { timestamp, photo } = JSON.parse(cachedData);
-        if ((now - new Date(timestamp)) < updateFrequency) {
-            const img = new Image();
-            img.onload = () => {
-                document.body.style.backgroundImage = `url(${photo.urls.full})`;
-                analyzeAndSetTextColor(photo.urls.full);
-            };
-            img.src = photo.urls.full;
-            displayPhotoCredit(photo);
+    // Show the last photo right away; if it's due for a change, fetch the next
+    // one quietly and swap it in once it has fully downloaded
+    if (cachedData) {
+        const cached = JSON.parse(cachedData);
+        const imageUrl = cached.imageUrl || cached.photo.urls.full;
+        applyBackground(imageUrl);
+        analyzeAndSetTextColor(imageUrl);
+        displayPhotoCredit(cached.photo);
+        if (!forceRefresh && (now - new Date(cached.timestamp)) < updateFrequency) {
             return;
         }
     }
 
-    if (!userApiKey) {
-        console.error("Unsplash API key is missing. Please add it in the options page.");
-        const creditContainer = document.getElementById('photo-credit');
-        creditContainer.style.display = 'block';
-        creditContainer.innerHTML = 'Unsplash background requires an API key in settings.';
-        return;
-    }
+    if (!userApiKey) return;
 
     try {
-        let apiUrl;
-        if (userApiKey) {
-            const cacheBust = new Date().getTime();
-            apiUrl = `https://api.unsplash.com/photos/random?query=wallpapers${themeQuery}&orientation=landscape&client_id=${userApiKey}&cache_bust=${cacheBust}`;
-        
-        }
+        const cacheBust = new Date().getTime();
+        const apiUrl = `https://api.unsplash.com/photos/random?query=wallpapers${themeQuery}&orientation=landscape&client_id=${userApiKey}&cache_bust=${cacheBust}`;
         const response = await fetch(apiUrl);
         if (response.ok) {
             const newPhoto = await response.json();
+            const imageUrl = screenSizedUrl(newPhoto);
             const img = new Image();
             img.onload = () => {
-                document.body.style.backgroundImage = `url(${newPhoto.urls.full})`;
-                analyzeAndSetTextColor(newPhoto.urls.full);
+                applyBackground(imageUrl);
+                analyzeAndSetTextColor(imageUrl);
                 localStorage.setItem('unsplashData', JSON.stringify({
                     timestamp: now.toISOString(),
-                    photo: newPhoto
+                    photo: newPhoto,
+                    imageUrl
                 }));
                 displayPhotoCredit(newPhoto);
             };
-            img.src = newPhoto.urls.full;
+            img.src = imageUrl;
         }
         else if (response.status === 429) {
             console.warn("Unsplash background refresh rate-limited. Please wait before trying again.");
