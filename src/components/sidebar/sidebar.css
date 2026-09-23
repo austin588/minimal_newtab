@@ -275,6 +275,19 @@ body.light .widget {
     transition: opacity 0.3s ease;
 }
 
+.todo-widget .todo-list li.todo-date-header {
+    display: block;
+    padding: 0 0 4px 0;
+    border-bottom: none;
+    font-weight: bold;
+    cursor: default;
+}
+
+/* One blank line before each earlier day */
+.todo-widget .todo-list li + li.todo-date-header {
+    margin-top: 1lh;
+}
+
 .todo-widget .todo-list li .checkbox-label {
     display: flex;
     align-items: center;

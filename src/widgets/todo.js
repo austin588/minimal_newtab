@@ -41,6 +41,49 @@ function adoptIfNewer(todoBackup) {
     return true;
 }
 
+// Local calendar day, e.g. "2026-09-23"
+function dayKey(date = new Date()) {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
+function dayLabel(key) {
+    const today = new Date();
+    const yesterday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1);
+    if (key === dayKey(today)) return 'Today';
+    if (key === dayKey(yesterday)) return 'Yesterday';
+    const [y, m, d] = key.split('-').map(Number);
+    return new Date(y, m - 1, d).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+}
+
+function setCompleted(todo, done) {
+    todo.completed = done;
+    if (done) {
+        todo.completedOn = dayKey();
+    } else {
+        delete todo.completedOn;
+    }
+}
+
+// Clear anything finished on an earlier day, date older items that predate this,
+// and order the list by the day each item was added (today first). Manual order
+// within a day is kept.
+function tidyTodos(todos) {
+    const today = dayKey();
+    return todos
+        .filter((todo) => !(todo.completed && (todo.completedOn || today) < today))
+        .map((todo) => {
+            const tidied = { ...todo, createdOn: todo.createdOn || today };
+            if (tidied.completed && !tidied.completedOn) tidied.completedOn = today;
+            return tidied;
+        })
+        .map((todo, position) => ({ todo, position }))
+        .sort((a, b) =>
+            a.todo.createdOn === b.todo.createdOn
+                ? a.position - b.position
+                : a.todo.createdOn < b.todo.createdOn ? 1 : -1)
+        .map(({ todo }) => todo);
+}
+
 export function renderTodo() {
     const widgetWrapper = document.createElement('div');
     widgetWrapper.className = 'todo-widget';
@@ -62,10 +105,25 @@ export function renderTodo() {
     let offsetY = 0;
     let itemHeight = 0;
 
+    let renderedDay = dayKey();
+
     const renderItems = () => {
-        const todos = getTodos();
+        const stored = getTodos();
+        const todos = tidyTodos(stored);
+        if (JSON.stringify(todos) !== JSON.stringify(stored)) saveTodos(todos);
+        renderedDay = dayKey();
+
         todoList.innerHTML = '';
+        let currentDay = null;
         todos.forEach((todo, index) => {
+            if (todo.createdOn !== currentDay) {
+                currentDay = todo.createdOn;
+                const header = document.createElement('li');
+                header.className = 'todo-date-header';
+                header.textContent = dayLabel(currentDay);
+                todoList.appendChild(header);
+            }
+
             const li = document.createElement('li');
             const label = document.createElement('label');
             label.className = 'checkbox-label';
@@ -140,7 +198,7 @@ export function renderTodo() {
                     if (!isDragging) {
                         // It was a click, toggle completed state
                         const todos = getTodos();
-                        todos[index].completed = !todos[index].completed;
+                        setCompleted(todos[index], !todos[index].completed);
                         saveTodos(todos);
                         renderItems();
                     } else {
@@ -159,7 +217,7 @@ export function renderTodo() {
             checkbox.type = 'checkbox';
             checkbox.checked = todo.completed;
             checkbox.addEventListener('change', () => {
-                todos[index].completed = checkbox.checked;
+                setCompleted(todos[index], checkbox.checked);
                 saveTodos(todos);
                 renderItems();
             });
@@ -260,7 +318,9 @@ export function renderTodo() {
 
         // Calculate new index based on placeholder position
         const children = Array.from(todoList.children);
-        const newIndex = children.filter(c => c !== draggedElement).indexOf(placeholder);
+        const newIndex = children
+            .filter(c => c !== draggedElement && !c.classList.contains('todo-date-header'))
+            .indexOf(placeholder);
 
         // Reorder todos if position changed
         if (newIndex !== -1 && newIndex !== draggedIndex) {
@@ -291,7 +351,7 @@ export function renderTodo() {
     input.addEventListener('keypress', (e) => {
         if (e.key === 'Enter' && input.value.trim() !== '') {
             const todos = getTodos();
-            todos.push({ text: input.value.trim(), completed: false });
+            todos.push({ text: input.value.trim(), completed: false, createdOn: dayKey() });
             saveTodos(todos);
             input.value = '';
             renderItems();
@@ -303,6 +363,11 @@ export function renderTodo() {
     widgetWrapper.appendChild(input);
 
     renderItems();
+
+    // Roll over at midnight even if the tab stays open
+    setInterval(() => {
+        if (dayKey() !== renderedDay && !draggedElement) renderItems();
+    }, 60 * 1000);
 
     if (hasChromeStorage) {
         Promise.all([chrome.storage.sync.get('todoBackup'), chrome.storage.local.get('todoBackup')])
