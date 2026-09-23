@@ -1,11 +1,44 @@
 const TODO_STORAGE_KEY = 'sidebar-todo-list';
+const TODO_UPDATED_KEY = 'sidebar-todo-list-updated';
+
+// localStorage is the fast working copy; chrome.storage keeps a backup. The sync
+// area follows the Chrome profile, so todos survive a reinstall when Chrome sync is on.
+const hasChromeStorage = typeof chrome !== 'undefined' && chrome.storage && chrome.storage.sync;
 
 function getTodos() {
     return JSON.parse(localStorage.getItem(TODO_STORAGE_KEY)) || [];
 }
 
+function localUpdatedAt() {
+    return Number(localStorage.getItem(TODO_UPDATED_KEY)) || 0;
+}
+
+function backupTodos(todos, updatedAt) {
+    if (!hasChromeStorage) return;
+    const todoBackup = { todos, updatedAt };
+    chrome.storage.local.set({ todoBackup });
+    // Sync caps a single item at 8KB; the local copy still holds very long lists
+    chrome.storage.sync.set({ todoBackup }).catch((err) => {
+        console.warn('Todo list too large to sync; kept in local backup only.', err);
+    });
+}
+
 function saveTodos(todos) {
+    const updatedAt = Date.now();
     localStorage.setItem(TODO_STORAGE_KEY, JSON.stringify(todos));
+    localStorage.setItem(TODO_UPDATED_KEY, String(updatedAt));
+    backupTodos(todos, updatedAt);
+}
+
+// Take a backup copy if it's newer than what this page has (another tab or
+// device changed it, or local data was cleared)
+function adoptIfNewer(todoBackup) {
+    if (!todoBackup || !Array.isArray(todoBackup.todos)) return false;
+    const localEmpty = getTodos().length === 0 && !localStorage.getItem(TODO_UPDATED_KEY);
+    if (todoBackup.updatedAt <= localUpdatedAt() && !localEmpty) return false;
+    localStorage.setItem(TODO_STORAGE_KEY, JSON.stringify(todoBackup.todos));
+    localStorage.setItem(TODO_UPDATED_KEY, String(todoBackup.updatedAt || Date.now()));
+    return true;
 }
 
 export function renderTodo() {
@@ -270,6 +303,25 @@ export function renderTodo() {
     widgetWrapper.appendChild(input);
 
     renderItems();
+
+    if (hasChromeStorage) {
+        Promise.all([chrome.storage.sync.get('todoBackup'), chrome.storage.local.get('todoBackup')])
+            .then(([synced, local]) => {
+                const newest = [synced.todoBackup, local.todoBackup]
+                    .filter(Boolean)
+                    .sort((a, b) => b.updatedAt - a.updatedAt)[0];
+                if (adoptIfNewer(newest)) {
+                    renderItems();
+                } else if (!newest ? getTodos().length > 0 : newest.updatedAt < localUpdatedAt()) {
+                    // First run with existing todos, or the backup is behind: back up now
+                    backupTodos(getTodos(), localUpdatedAt() || Date.now());
+                }
+            });
+        chrome.storage.onChanged.addListener((changes) => {
+            if (!changes.todoBackup || draggedElement) return;
+            if (adoptIfNewer(changes.todoBackup.newValue)) renderItems();
+        });
+    }
 
     return widgetWrapper;
 }

@@ -59,6 +59,9 @@ document.addEventListener("DOMContentLoaded", () => {
     "bookmarks",
     "bookmarkFolder",
     "expandBookmarks",
+    "todoColumn",
+    "calendarColumn",
+    "calendarIcsUrl",
     "topRight",
     "topRightOrder",
     "pixelArt",
@@ -68,6 +71,10 @@ document.addEventListener("DOMContentLoaded", () => {
     "pixelArtDensity",
     "pixelArtColorDark",
     "pixelArtColorLight",
+    "cardOpacityDark",
+    "cardOpacityLight",
+    "cardTextColorDark",
+    "cardTextColorLight",
     "availableWidgets",
     "theme",
     "backgroundImage",
@@ -148,6 +155,16 @@ document.addEventListener("DOMContentLoaded", () => {
   if (settings["expandBookmarks"]) {
     document.getElementById("expand-bookmarks").checked = true;
   }
+  if (settings["todoColumn"]) {
+    document.getElementById("show-todoColumn").checked = true;
+  }
+  if (settings["calendarColumn"]) {
+    document.getElementById("show-calendarColumn").checked = true;
+  } else {
+    document.getElementById("calendar-options").classList.add("disabled");
+  }
+  document.getElementById("calendar-ics-url").value =
+    settings["calendarIcsUrl"] || "";
   if (settings["topRight"]) {
     document.getElementById("show-topRight").checked = true;
   } else {
@@ -184,6 +201,14 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("pixelArtColorLight").value =
       settings["pixelArtColorLight"];
   }
+  [
+    "cardOpacityDark",
+    "cardOpacityLight",
+    "cardTextColorDark",
+    "cardTextColorLight",
+  ].forEach((key) => {
+    document.getElementById(key).value = settings[key] ?? defaultSettings[key];
+  });
   if (settings["customCSS"]) {
     document.getElementById("custom-css").value = settings["customCSS"];
   }
@@ -567,7 +592,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let saveBtn = document.getElementById("save");
   saveBtn.addEventListener("click", () => {
-    let settings_obj = {};
+    // Start from what's saved so keys this page doesn't manage aren't dropped
+    let settings_obj = {
+      ...defaultSettings,
+      ...(JSON.parse(localStorage.getItem("settings")) || {}),
+    };
     settings_keys.map((key) => {
       if (key == "topRightOrder") {
         let orderArr = [];
@@ -591,6 +620,12 @@ document.addEventListener("DOMContentLoaded", () => {
         settings_obj[key] = document.querySelector(
           "#bookmark-folder-selector-span select",
         ).value;
+      } else if (key == "calendarIcsUrl") {
+        const url = document.getElementById("calendar-ics-url").value.trim();
+        if (url !== (settings.calendarIcsUrl || "")) {
+          localStorage.removeItem("calendarData");
+        }
+        settings_obj[key] = url;
       } else if (key == "expandBookmarks") {
         settings_obj[key] = document.getElementById("expand-bookmarks").checked;
       } else if (key == "selectedPixelArt") {
@@ -603,6 +638,10 @@ document.addEventListener("DOMContentLoaded", () => {
           "pixelArtDensity",
           "pixelArtColorDark",
           "pixelArtColorLight",
+          "cardOpacityDark",
+          "cardOpacityLight",
+          "cardTextColorDark",
+          "cardTextColorLight",
         ].includes(key)
       ) {
         settings_obj[key] = document.getElementById(key).value;
@@ -660,7 +699,10 @@ document.addEventListener("DOMContentLoaded", () => {
       } else if (key === "backgroundImage") {
         settings_obj[key] = settings.backgroundImage || "";
       } else if (key === "useUnsplash") {
-        settings_obj[key] = document.getElementById("use-unsplash").checked;
+        // Only keep Unsplash on when there's a key to use it with
+        settings_obj[key] =
+          document.getElementById("use-unsplash").checked &&
+          document.getElementById("unsplash-api-key").value.trim() !== "";
         if (settings_obj[key]) {
           settings_obj["backgroundImage"] = "";
         }
@@ -905,6 +947,12 @@ document.getElementById("show-bookmarks").onchange = (e) => {
     .classList.toggle("disabled", !e.target.checked);
 };
 
+document.getElementById("show-calendarColumn").onchange = (e) => {
+  document
+    .getElementById("calendar-options")
+    .classList.toggle("disabled", !e.target.checked);
+};
+
 document.getElementById("show-topRight").onchange = (e) => {
   document
     .querySelector("#shortcuts-links")
@@ -1031,6 +1079,7 @@ document.getElementById("export-settings").addEventListener("click", () => {
   const storedSettings = JSON.parse(localStorage.getItem("settings") || "{}");
   // Merge with defaults to ensure all keys are included in export
   const settings = { ...defaultSettings, ...storedSettings };
+  settings.todos = JSON.parse(localStorage.getItem("sidebar-todo-list") || "[]");
   const dataStr = JSON.stringify(settings, null, 2);
   const blob = new Blob([dataStr], { type: "application/json" });
   const url = URL.createObjectURL(blob);
@@ -1122,6 +1171,18 @@ function handleImportFile(file) {
 
       // Merge with default settings to ensure all keys exist
       const mergedSettings = { ...defaultSettings, ...importedSettings };
+
+      // Todos travel in the backup file but live in their own storage
+      if (Array.isArray(mergedSettings.todos)) {
+        const todoBackup = { todos: mergedSettings.todos, updatedAt: Date.now() };
+        localStorage.setItem("sidebar-todo-list", JSON.stringify(todoBackup.todos));
+        localStorage.setItem("sidebar-todo-list-updated", String(todoBackup.updatedAt));
+        if (chrome.storage) {
+          chrome.storage.local.set({ todoBackup });
+          chrome.storage.sync.set({ todoBackup }).catch(() => {});
+        }
+      }
+      delete mergedSettings.todos;
 
       localStorage.setItem("settings", JSON.stringify(mergedSettings));
       showNotification(

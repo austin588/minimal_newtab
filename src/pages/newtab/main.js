@@ -4,6 +4,9 @@ import { renderBookmarks } from "../../components/bookmarks/bookmarks.js";
 import { renderTopRight } from "../../components/topRight/topRight.js";
 import { renderSidebar } from "../../components/sidebar/sidebar.js";
 import { renderUnsplashBackground } from "../../components/unsplash/unsplash.js";
+import { renderAgenda } from "../../components/agenda/agenda.js";
+import { renderNextCall } from "../../components/nextCall/nextCall.js";
+import { renderTodo } from "../../widgets/todo.js";
 
 if (localStorage.getItem("settings") === null) {
   localStorage.setItem("settings", JSON.stringify(defaultSettings));
@@ -17,8 +20,18 @@ document.addEventListener("DOMContentLoaded", () => {
   applyTheme(theme);
 });
 
-const settings =
-  JSON.parse(localStorage.getItem("settings")) || defaultSettings;
+// Fill in any settings added since the user last saved, without touching theirs
+const settings = {
+  ...defaultSettings,
+  ...(JSON.parse(localStorage.getItem("settings")) || {}),
+};
+
+// Card look for the three columns, from Customize > Appearance
+const rootStyle = document.documentElement.style;
+rootStyle.setProperty("--card-bg-dark", `rgba(0, 0, 0, ${settings.cardOpacityDark / 100})`);
+rootStyle.setProperty("--card-bg-light", `rgba(0, 0, 0, ${settings.cardOpacityLight / 100})`);
+rootStyle.setProperty("--card-text-dark", settings.cardTextColorDark);
+rootStyle.setProperty("--card-text-light", settings.cardTextColorLight);
 
 // Apply custom CSS if provided
 if (settings.customCSS) {
@@ -28,14 +41,17 @@ if (settings.customCSS) {
   document.head.appendChild(styleElement);
 }
 
-if (settings.useUnsplash) {
+// Unsplash needs an API key; without one, skip it instead of erroring every tab
+const useUnsplash = settings.useUnsplash && !!settings.unsplashApiKey;
+
+if (useUnsplash) {
   renderUnsplashBackground(settings);
 } else if (settings.backgroundImage) {
   document.body.style.backgroundImage = `url(${settings.backgroundImage})`;
   analyzeAndSetTextColor(settings.backgroundImage);
 }
 
-if (settings.useUnsplash || settings.backgroundImage) {
+if (useUnsplash || settings.backgroundImage) {
   document.body.style.backgroundSize = "cover";
   document.body.style.backgroundPosition = "center";
 }
@@ -62,7 +78,21 @@ if (settings.bookmarks) {
   window.renderBookmarks = () => renderBookmarks(settings);
   renderBookmarks(settings);
 } else {
-  document.getElementById("shortcuts").style.display = "none";
+  document.getElementById("bookmarks-column").style.display = "none";
+}
+
+if (settings.todoColumn) {
+  document.getElementById("todo-column").append(renderTodo());
+} else {
+  document.getElementById("todo-column").style.display = "none";
+}
+
+if (settings.calendarColumn) {
+  // Listen before the calendar renders so the first batch of events isn't missed
+  renderNextCall(document.getElementById("next-call"), settings);
+  renderAgenda(document.getElementById("agenda-column"), settings);
+} else {
+  document.getElementById("agenda-column").style.display = "none";
 }
 
 // Quick nav: show number hints when modifier key is held

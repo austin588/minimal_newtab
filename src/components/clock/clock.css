@@ -1,5 +1,6 @@
 .clock {
-    font-size: 5rem;
+    font-size: 9rem;
+    line-height: 1;
     margin-bottom: 0.5rem;
 }
 .clock .ampm {

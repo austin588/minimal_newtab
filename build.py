@@ -181,6 +181,7 @@ def get_build_configs() -> Dict[str, BuildConfig]:
         BuildAsset("src/components", "components", is_dir=True, minify=True),
         BuildAsset("src/widgets", "widgets", is_dir=True, minify=True),
         BuildAsset("src/shared", "shared", is_dir=True, minify=True),
+        BuildAsset("src/lib", "lib", is_dir=True),
     ]
     return {"prod": BuildConfig("prod", assets), "dev": BuildConfig("dev", assets)}
 

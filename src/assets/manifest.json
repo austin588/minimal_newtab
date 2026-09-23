@@ -7,9 +7,11 @@
     "newtab": "pages/newtab/index.html"
   },
   "options_page": "pages/options/options.html",
-  "permissions": ["bookmarks", "geolocation", "commands"],
+  "permissions": ["bookmarks", "geolocation", "commands", "storage", "alarms"],
+  "host_permissions": ["https://calendar.google.com/*"],
   "background": {
-    "service_worker": "pages/background.js"
+    "service_worker": "pages/background.js",
+    "type": "module"
   },
   "commands": {
     "toggle-overlay": {

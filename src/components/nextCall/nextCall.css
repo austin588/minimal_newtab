@@ -1,0 +1,61 @@
+.next-call {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.6rem;
+    max-width: min(900px, 100% - 4rem);
+    margin-bottom: 1.2rem;
+    font-size: 1.1rem;
+}
+
+.next-call.hidden {
+    display: none;
+}
+
+.next-call-label {
+    opacity: 0.6;
+}
+
+.next-call-title {
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+
+.next-call-when {
+    opacity: 0.6;
+    white-space: nowrap;
+}
+
+.next-call-join {
+    align-self: center;
+    padding: 1px 10px;
+    border: 1px solid var(--color-accent);
+    border-radius: 4px;
+    color: var(--color-accent);
+    text-decoration: none;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.next-call-join:hover {
+    background-color: var(--hover-bg);
+}
+
+/* Starting within a couple of minutes, or underway: make joining obvious */
+.next-call.live .next-call-when {
+    opacity: 1;
+    color: var(--color-accent);
+}
+
+.next-call.live .next-call-join {
+    background-color: var(--color-accent);
+    color: #121212;
+    font-weight: bold;
+}
+
+body.light .next-call.live .next-call-join {
+    color: #fff;
+}

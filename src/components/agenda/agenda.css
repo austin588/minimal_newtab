@@ -1,0 +1,125 @@
+.agenda-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.agenda-open {
+    color: inherit;
+    font-size: 0.8rem;
+    font-weight: normal;
+    opacity: 0.6;
+    text-decoration: underline dotted;
+    text-underline-offset: 2px;
+}
+
+.agenda-open:hover {
+    opacity: 1;
+}
+
+.agenda-day {
+    display: block;
+    font-weight: bold;
+    padding: 0.6rem 0 0.4rem 0;
+    color: inherit;
+    text-decoration: none;
+    position: relative;
+}
+
+/* One blank line between the end of one day and the start of the next */
+.agenda-events + .agenda-day {
+    margin-top: 1lh;
+}
+
+.agenda-events {
+    list-style: none;
+    margin: 0 0 0.4rem 0;
+    padding-left: 1.2rem;
+}
+
+.agenda-event {
+    display: grid;
+    grid-template-columns: 5.5rem minmax(0, 1fr) auto;
+    gap: 0.6rem;
+    padding: 0.2rem 0 0.4rem 0;
+    color: inherit;
+    text-decoration: none;
+    position: relative;
+}
+
+.agenda-time {
+    opacity: 0.6;
+    white-space: nowrap;
+}
+
+.agenda-title {
+    text-decoration: underline dotted;
+    text-underline-offset: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.agenda-join {
+    font-size: 0.75rem;
+    align-self: center;
+    padding: 0 6px;
+    border: 1px solid var(--number-hint-subtle-border);
+    border-radius: 4px;
+    opacity: 0.7;
+}
+
+.agenda-event:hover .agenda-join,
+.agenda-event.now .agenda-join {
+    opacity: 1;
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+}
+
+.agenda-day:hover::before,
+.agenda-event:hover::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -4px;
+    right: -4px;
+    background-color: var(--hover-bg);
+    border-radius: 4px;
+    z-index: -1;
+}
+
+.agenda-event.past {
+    opacity: 0.45;
+}
+
+.agenda-event.now .agenda-time {
+    opacity: 1;
+    color: var(--color-accent);
+    font-weight: bold;
+}
+
+.agenda-event.now .agenda-title {
+    font-weight: bold;
+}
+
+.agenda-message {
+    margin: 0 0 0.6rem 0;
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+.agenda-input {
+    width: 100%;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: inherit;
+    font-family: monospace;
+    box-sizing: border-box;
+}
+
+body.light .agenda-input {
+    background: rgba(0, 0, 0, 0.05);
+}

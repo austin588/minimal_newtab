@@ -133,6 +133,43 @@
                             >
                         </span>
                     </div>
+                    <label class="checkbox-label"
+                        ><input type="checkbox" id="show-todoColumn" /><span
+                            class="custom-checkbox"
+                        ></span>
+                        Show Todo List</label
+                    >
+                    <label class="checkbox-label"
+                        ><input type="checkbox" id="show-calendarColumn" /><span
+                            class="custom-checkbox"
+                        ></span>
+                        Show Calendar</label
+                    >
+                    <div id="calendar-options" class="sub-settings">
+                        <div class="setting-row">
+                            <label for="calendar-ics-url"
+                                >Calendar iCal address</label
+                            >
+                            <input
+                                class="text-input"
+                                type="text"
+                                id="calendar-ics-url"
+                                placeholder="https://calendar.google.com/calendar/ical/.../basic.ics"
+                                autocomplete="off"
+                            />
+                            <p
+                                style="
+                                    font-size: 0.8em;
+                                    opacity: 0.7;
+                                    margin-top: 0.3em;
+                                "
+                            >
+                                In Google Calendar, open Settings, pick your
+                                calendar, and copy the "Secret address in iCal
+                                format". It stays on this device.
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="shortcuts" class="options-panel">
@@ -425,6 +462,45 @@
                                     id="pixelArtColorLight"
                             /></label>
                         </div>
+                    </div>
+
+                    <div class="setting-row" style="margin-top: 2em">
+                        <label for="cardOpacityDark"
+                            >Card Opacity (Dark Theme)</label
+                        >
+                        <input
+                            type="range"
+                            id="cardOpacityDark"
+                            min="0"
+                            max="100"
+                            step="1"
+                        />
+                    </div>
+                    <div class="setting-row">
+                        <label for="cardOpacityLight"
+                            >Card Opacity (Light Theme)</label
+                        >
+                        <input
+                            type="range"
+                            id="cardOpacityLight"
+                            min="0"
+                            max="100"
+                            step="1"
+                        />
+                    </div>
+                    <div class="setting-row">
+                        <label
+                            >Card Text Color (Dark Theme)<input
+                                type="color"
+                                id="cardTextColorDark"
+                        /></label>
+                    </div>
+                    <div class="setting-row">
+                        <label
+                            >Card Text Color (Light Theme)<input
+                                type="color"
+                                id="cardTextColorLight"
+                        /></label>
                     </div>
 
                     <div class="setting-row" style="margin-top: 2em">

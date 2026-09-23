@@ -22,7 +22,7 @@ function processBookmarks(settings, nodes, container, level = 0, path = "") {
             const childrenList = document.createElement('ul');
             childrenList.className = 'bookmark-children';
 
-            const isOpen = settings.expandBookmarks ? true : localStorage.getItem(currentPath) === "true";
+            const isOpen = settings.expandBookmarks ? true : localStorage.getItem(currentPath) !== "false";
             if (isOpen) {
                 chevron.textContent = '▼';
             } else {

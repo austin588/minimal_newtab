@@ -31,6 +31,8 @@
         <link rel="stylesheet" href="../../components/overlay/overlay.css" />
         <link rel="stylesheet" href="../../components/bangs/bangs.css" />
         <link rel="stylesheet" href="../../components/search/search.css" />
+        <link rel="stylesheet" href="../../components/agenda/agenda.css" />
+        <link rel="stylesheet" href="../../components/nextCall/nextCall.css" />
         <script src="../../shared/defaultSettings.js"></script>
         <script src="../../shared/utils.js"></script>
     </head>
@@ -42,7 +44,15 @@
 
         <div class="clock" id="clock"></div>
         <div class="weather" id="weather"></div>
-        <div class="shortcuts" id="shortcuts"></div>
+        <div class="next-call hidden" id="next-call"></div>
+        <div class="columns" id="columns">
+            <div class="column" id="bookmarks-column">
+                <h3>Bookmarks</h3>
+                <div class="shortcuts" id="shortcuts"></div>
+            </div>
+            <div class="column" id="todo-column"></div>
+            <div class="column" id="agenda-column"></div>
+        </div>
 
         <div class="customize" id="customize" title="customize">
             <span class="customize-icon"></span>
