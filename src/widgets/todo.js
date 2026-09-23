@@ -55,6 +55,17 @@ function dayLabel(key) {
     return new Date(y, m - 1, d).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
 }
 
+function daysOld(key) {
+    const [y, m, d] = key.split('-').map(Number);
+    const today = new Date();
+    const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    return Math.round((startOfToday - new Date(y, m - 1, d)) / 86400000);
+}
+
+// Carried-over items this many days old get a visible age tag
+const STALE_DAYS = 3;
+const UNDO_MS = 6000;
+
 function setCompleted(todo, done) {
     todo.completed = done;
     if (done) {
@@ -89,14 +100,14 @@ export function renderTodo() {
     widgetWrapper.className = 'todo-widget';
 
     const title = document.createElement('h3');
-    title.textContent = 'Todo List';
+    title.textContent = 'To-do';
 
     const todoList = document.createElement('ul');
     todoList.className = 'todo-list';
 
     const input = document.createElement('input');
     input.type = 'text';
-    input.placeholder = 'Add a new todo...';
+    input.placeholder = 'Add a to-do...';
     input.className = 'todo-input';
 
     let draggedIndex = null;
@@ -139,7 +150,7 @@ export function renderTodo() {
             // Mouse events for constrained vertical dragging
             li.addEventListener('mousedown', (e) => {
                 // Allow delete button clicks to pass through
-                if (e.target.tagName === 'BUTTON') return;
+                if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') return;
                 
                 e.preventDefault();
                 startX = e.clientX;
@@ -229,22 +240,105 @@ export function renderTodo() {
             text.className = 'todo-text';
             text.textContent = todo.text;
 
-            const deleteBtn = document.createElement('button');
-            deleteBtn.textContent = '×';
-            deleteBtn.addEventListener('click', () => {
-                todos.splice(index, 1);
+            const today = dayKey();
+            const age = daysOld(todo.createdOn);
+            const carriedOver = !todo.completed && todo.createdOn < today;
+
+            const buttons = [];
+            const addButton = (symbol, label, onClick) => {
+                const btn = document.createElement('button');
+                btn.textContent = symbol;
+                btn.title = label;
+                btn.setAttribute('aria-label', label);
+                btn.addEventListener('click', onClick);
+                buttons.push(btn);
+            };
+
+            if (carriedOver) {
+                addButton('↑', 'Move to today', () => {
+                    todos[index].createdOn = today;
+                    saveTodos(todos);
+                    renderItems();
+                });
+            }
+            addButton('✎', 'Edit', () => startEditing(li, label, index));
+            addButton('×', 'Delete', () => {
+                const [removed] = todos.splice(index, 1);
                 saveTodos(todos);
                 renderItems();
+                offerUndo(removed, index);
             });
 
             label.appendChild(checkbox);
             label.appendChild(customCheckbox);
             label.appendChild(text);
+            if (carriedOver && age >= STALE_DAYS) {
+                const ageTag = document.createElement('span');
+                ageTag.className = 'todo-age';
+                ageTag.textContent = `${age}d`;
+                ageTag.title = `Added ${age} days ago`;
+                label.appendChild(ageTag);
+            }
 
             li.appendChild(label);
-            li.appendChild(deleteBtn);
+            buttons.forEach((btn) => li.appendChild(btn));
             todoList.appendChild(li);
         });
+    };
+
+    // Swap a row's text for an input; Enter or clicking away saves, Escape cancels
+    const startEditing = (li, label, index) => {
+        const todos = getTodos();
+        const field = document.createElement('input');
+        field.type = 'text';
+        field.className = 'todo-edit';
+        field.value = todos[index].text;
+        label.style.display = 'none';
+        li.insertBefore(field, label);
+        li.classList.add('editing');
+        field.focus();
+        field.select();
+
+        let finished = false;
+        const finish = (save) => {
+            if (finished) return;
+            finished = true;
+            const value = field.value.trim();
+            if (save && value && value !== todos[index].text) {
+                todos[index].text = value;
+                saveTodos(todos);
+            }
+            renderItems();
+        };
+        field.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') finish(true);
+            if (e.key === 'Escape') finish(false);
+        });
+        field.addEventListener('blur', () => finish(true));
+    };
+
+    // After a delete, offer a few seconds to put it back where it was
+    const undoBar = document.createElement('div');
+    undoBar.className = 'todo-undo hidden';
+    let undoTimer = null;
+    const offerUndo = (todo, index) => {
+        clearTimeout(undoTimer);
+        undoBar.innerHTML = '';
+        const message = document.createElement('span');
+        message.textContent = `Deleted "${todo.text}"`;
+        const undo = document.createElement('button');
+        undo.textContent = 'Undo';
+        undo.addEventListener('click', () => {
+            const todos = getTodos();
+            todos.splice(Math.min(index, todos.length), 0, todo);
+            saveTodos(todos);
+            renderItems();
+            undoBar.classList.add('hidden');
+            clearTimeout(undoTimer);
+        });
+        undoBar.append(message, undo);
+        undoBar.classList.remove('hidden');
+        undoTimer = setTimeout(() => undoBar.classList.add('hidden'), UNDO_MS);
     };
 
     const onMouseMove = (e) => {
@@ -360,6 +454,7 @@ export function renderTodo() {
 
     widgetWrapper.appendChild(title);
     widgetWrapper.appendChild(todoList);
+    widgetWrapper.appendChild(undoBar);
     widgetWrapper.appendChild(input);
 
     renderItems();

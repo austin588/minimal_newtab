@@ -334,7 +334,7 @@ body.light .widget {
 .todo-widget .todo-list button {
     background: none;
     border: none;
-    color: #f0f0f0;
+    color: inherit;
     font-size: 1.2em;
     cursor: pointer;
     opacity: 0;
@@ -342,8 +342,66 @@ body.light .widget {
     padding: 0 5px;
 }
 
-body.light .todo-widget .todo-list button {
-    color: #222;
+.todo-widget .todo-age {
+    margin-left: 0.6rem;
+    padding: 0 6px;
+    border: 1px solid var(--color-accent);
+    border-radius: 4px;
+    color: var(--color-accent);
+    font-size: 0.75rem;
+    flex-shrink: 0;
+    text-decoration: none;
+}
+
+.todo-widget .todo-edit {
+    flex-grow: 1;
+    padding: 2px 6px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--color-accent);
+    border-radius: 4px;
+    color: inherit;
+    font: inherit;
+}
+
+body.light .todo-widget .todo-edit {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.todo-widget .todo-list li.editing button {
+    display: none;
+}
+
+.todo-widget .todo-undo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0 0 10px 0;
+    padding: 6px 8px;
+    border-radius: 4px;
+    background: var(--hover-bg);
+    font-size: 0.9em;
+}
+
+.todo-widget .todo-undo.hidden {
+    display: none;
+}
+
+.todo-widget .todo-undo span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+
+.todo-widget .todo-undo button {
+    background: none;
+    border: 1px solid var(--color-accent);
+    border-radius: 4px;
+    color: var(--color-accent);
+    font: inherit;
+    cursor: pointer;
+    padding: 0 8px;
 }
 
 .todo-widget .todo-list li:hover button {
