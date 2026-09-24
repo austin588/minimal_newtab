@@ -1,0 +1,145 @@
+/* Sits just above the theme toggle; the label grows leftward like the theme one */
+.scratchpad-toggle {
+    position: absolute;
+    bottom: 3.75rem;
+    right: 1rem;
+    cursor: pointer;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    direction: rtl;
+    transition: opacity 0.3s ease;
+}
+
+.scratchpad-icon svg {
+    width: 28px;
+    height: 28px;
+    vertical-align: middle;
+    transition: transform 0.3s ease;
+}
+
+.scratchpad-toggle:hover .scratchpad-icon svg {
+    transform: rotate(-8deg);
+}
+
+.scratchpad-label {
+    opacity: 0;
+    max-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: opacity 0.3s ease, max-width 0.3s ease;
+    font-size: 0.95rem;
+    text-decoration: underline dotted;
+    direction: ltr;
+}
+
+.scratchpad-toggle:hover .scratchpad-label {
+    opacity: 1;
+    max-width: 4rem;
+}
+
+/* Softly blurs and dims the page behind the open scratchpad */
+.scratchpad-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0s linear 0.2s;
+    z-index: 19;
+}
+
+.scratchpad-backdrop.open {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.2s ease, visibility 0s;
+}
+
+/* Pops up in the middle: grows in on open, shrinks away on close. Visibility
+   flips after the shrink finishes so the hidden notes can't hold focus. */
+.scratchpad-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: min(880px, 100vw - 2rem);
+    height: min(720px, 100vh - 4rem);
+    box-sizing: border-box;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    border-radius: 12px;
+    background: rgba(25, 25, 25, 0.88);
+    color: #f0f0f0;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    transform: translate(-50%, -50%) scale(0.85);
+    opacity: 0;
+    visibility: hidden;
+    transition: transform 0.2s ease, opacity 0.2s ease, visibility 0s linear 0.2s;
+    z-index: 20;
+}
+
+body.light .scratchpad-panel {
+    background: rgba(245, 245, 245, 0.92);
+    color: #222;
+}
+
+.scratchpad-panel.open {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    visibility: visible;
+    transition: transform 0.2s ease, opacity 0.2s ease, visibility 0s;
+}
+
+.scratchpad-header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.3);
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+}
+
+.scratchpad-header h3 {
+    margin: 0;
+    flex: 1;
+}
+
+.scratchpad-status {
+    font-size: 0.8rem;
+    opacity: 0.6;
+}
+
+.scratchpad-close {
+    cursor: pointer;
+    font-size: 1.4rem;
+    line-height: 1;
+    opacity: 0.7;
+}
+
+.scratchpad-close:hover {
+    opacity: 1;
+}
+
+.scratchpad-text {
+    flex: 1;
+    width: 100%;
+    resize: none;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: inherit;
+    font-family: monospace;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.scratchpad-text::placeholder {
+    color: inherit;
+    opacity: 0.45;
+}

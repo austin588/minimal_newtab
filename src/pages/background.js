@@ -7,8 +7,18 @@ chrome.commands.onCommand.addListener((command) => {
     toggleOverlay();
   } else if (command === "open-options") {
     chrome.tabs.create({ url: "pages/options/options.html" });
+  } else if (command === "toggle-scratchpad") {
+    toggleScratchpad();
   }
 });
+
+// The scratchpad lives on the new tab page, an extension page, so broadcast and
+// let the page in the active tab pick it up
+async function toggleScratchpad() {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!tab) return;
+  chrome.runtime.sendMessage({ action: "toggleScratchpad", tabId: tab.id }).catch(() => {});
+}
 
 async function toggleOverlay() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
