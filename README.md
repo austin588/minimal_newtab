@@ -26,8 +26,8 @@
 |           Dark Theme              |         Light Theme                 |
 |-----------------------------------|-------------------------------------|
 | ![Dark](screenshots/dark_new.png) | ![Light](screenshots/light_new.png) |
-| Options                           |         Sidebar                     |
-|![Options](screenshots/options.png)| ![Sidebar](screenshots/sidebar.png) |
+| Look picker                       |         Newsprint look              |
+|![Options](screenshots/options.png)| ![Newsprint](screenshots/newsprint.png) |
 
 
 ---
