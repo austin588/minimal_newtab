@@ -7,6 +7,7 @@ import { renderUnsplashBackground } from "../../components/unsplash/unsplash.js"
 import { renderAgenda } from "../../components/agenda/agenda.js";
 import { renderNextCall } from "../../components/nextCall/nextCall.js";
 import { renderScratchpad } from "../../components/scratchpad/scratchpad.js";
+import { renderQuote } from "../../components/quote/quote.js";
 
 if (localStorage.getItem("settings") === null) {
   localStorage.setItem("settings", JSON.stringify(defaultSettings));
@@ -84,6 +85,7 @@ if (settings.calendarColumn) {
   document.getElementById("agenda-column").style.display = "none";
 }
 
+renderQuote(document.getElementById("quote"));
 renderScratchpad();
 
 // Quick nav: show number hints when modifier key is held

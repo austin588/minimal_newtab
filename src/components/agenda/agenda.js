@@ -69,7 +69,7 @@ function renderEventList(list, events, settings) {
         if (dayEvents.length === 0) continue;
 
         const heading = makeLink(dayUrl(dayStart), settings);
-        heading.className = "agenda-day";
+        heading.className = i === 0 ? "agenda-day is-today" : "agenda-day";
         heading.textContent = dayLabel(dayStart, today);
         list.append(heading);
 

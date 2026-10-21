@@ -1,0 +1,80 @@
+/* A band between the masthead and the columns, set off by Dot's heavy rule */
+.quote {
+    flex: none;
+    margin: 0;
+    padding: 18px 0;
+    border-top: 2.5px solid var(--ink);
+    border-bottom: 1px solid var(--rule);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px 40px;
+    cursor: pointer;
+    transition: opacity 0.4s ease;
+}
+
+.quote.fading {
+    opacity: 0;
+}
+
+.quote-text {
+    margin: 0;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(19px, 1.7vw, 25px);
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+    text-wrap: balance;
+    /* Room for two lines so the columns below hold still as most quotes change */
+    min-height: calc(2 * 1.3em);
+    display: flex;
+    align-items: center;
+}
+
+.quote-line::before {
+    content: "\201C";
+    color: var(--accent);
+    margin-right: 0.08em;
+}
+
+.quote-line::after {
+    content: "\201D";
+    color: var(--accent);
+    margin-left: 0.04em;
+}
+
+.quote-by {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.quote-author {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.quote-source {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--muted);
+}
+
+@media (max-width: 900px) {
+    .quote {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .quote-by {
+        align-items: flex-start;
+        text-align: left;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .quote {
+        transition: none;
+    }
+}

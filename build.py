@@ -170,6 +170,7 @@ def get_build_configs() -> Dict[str, BuildConfig]:
         BuildAsset("src/assets/manifest.json", "manifest.json"),
         BuildAsset("src/pages/background.js", "pages/background.js"),
         BuildAsset("src/assets/favicons", dst_name="assets/favicons", is_dir=True),
+        BuildAsset("src/assets/fonts", dst_name="assets/fonts", is_dir=True),
         BuildAsset("src/pages/newtab", "pages/newtab", is_dir=True, minify=True),
         BuildAsset(
             "src/pages/options",

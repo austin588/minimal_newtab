@@ -1,9 +1,22 @@
 .clock {
-    font-size: 9rem;
-    line-height: 1;
-    margin-bottom: 0.5rem;
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(80px, 10vw, 150px);
+    letter-spacing: -0.05em;
+    line-height: 0.8;
+    font-variant-numeric: tabular-nums;
+    margin: 0;
 }
+
+.clock .colon {
+    color: var(--accent);
+    font-weight: 800;
+}
+
 .clock .ampm {
-    font-size: 0.3em;
-    margin-left: 0.15em;
+    font-size: 0.2em;
+    font-weight: 700;
+    letter-spacing: 0;
+    margin-left: 0.4em;
+    color: var(--muted);
 }

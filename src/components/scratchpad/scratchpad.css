@@ -1,8 +1,8 @@
-/* Sits just above the theme toggle; the label grows leftward like the theme one */
+/* Sits beside the theme toggle, clear of the columns; the label grows leftward like the theme one */
 .scratchpad-toggle {
     position: absolute;
-    bottom: 3.75rem;
-    right: 1rem;
+    bottom: 1rem;
+    right: 3.5rem;
     cursor: pointer;
     color: inherit;
     display: flex;
@@ -13,8 +13,8 @@
 }
 
 .scratchpad-icon svg {
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     vertical-align: middle;
     transition: transform 0.3s ease;
 }

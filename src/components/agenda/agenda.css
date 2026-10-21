@@ -5,121 +5,132 @@
 }
 
 .agenda-open {
-    color: inherit;
-    font-size: 0.8rem;
-    font-weight: normal;
-    opacity: 0.6;
-    text-decoration: underline dotted;
-    text-underline-offset: 2px;
+    font-family: var(--body);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0;
+    color: var(--muted);
+    text-decoration: none;
+    border: 1.5px solid var(--rule);
+    border-radius: 999px;
+    padding: 2px 12px;
 }
 
 .agenda-open:hover {
-    opacity: 1;
+    border-color: var(--ink);
+    color: var(--ink);
 }
 
+/* Day labels read like Dot's group headers; today's is the orange one */
 .agenda-day {
     display: block;
-    font-weight: bold;
-    padding: 0.6rem 0 0.4rem 0;
-    color: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    padding: 14px 8px 6px;
+    border-bottom: 1px solid var(--rule);
     text-decoration: none;
-    position: relative;
 }
 
-/* One blank line between the end of one day and the start of the next */
-.agenda-events + .agenda-day {
-    margin-top: 1lh;
+.agenda-day:first-child {
+    padding-top: 0;
+}
+
+.agenda-day.is-today {
+    color: var(--accent);
+}
+
+.agenda-day:hover {
+    color: var(--ink);
 }
 
 .agenda-events {
     list-style: none;
-    margin: 0 0 0.4rem 0;
-    padding-left: 1.2rem;
+    margin: 0;
+    padding: 0;
 }
 
 .agenda-event {
     display: grid;
-    grid-template-columns: 5.5rem minmax(0, 1fr) auto;
-    gap: 0.6rem;
-    padding: 0.2rem 0 0.4rem 0;
+    grid-template-columns: 4.6rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    padding: 7px 8px;
+    border-bottom: 1px solid var(--rule);
     color: inherit;
     text-decoration: none;
-    position: relative;
+}
+
+.agenda-event:hover {
+    background: var(--hover);
 }
 
 .agenda-time {
-    opacity: 0.6;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
     white-space: nowrap;
+    font-variant-numeric: tabular-nums;
 }
 
 .agenda-title {
-    text-decoration: underline dotted;
-    text-underline-offset: 2px;
+    font-weight: 500;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .agenda-join {
-    font-size: 0.75rem;
-    align-self: center;
-    padding: 0 6px;
-    border: 1px solid var(--number-hint-subtle-border);
-    border-radius: 4px;
-    opacity: 0.7;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    padding: 0 10px;
 }
 
 .agenda-event:hover .agenda-join,
 .agenda-event.now .agenda-join {
-    opacity: 1;
-    color: var(--color-accent);
-    border-color: var(--color-accent);
-}
-
-.agenda-day:hover::before,
-.agenda-event:hover::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: -4px;
-    right: -4px;
-    background-color: var(--hover-bg);
-    border-radius: 4px;
-    z-index: -1;
+    color: var(--accent);
+    border-color: var(--accent);
 }
 
 .agenda-event.past {
     opacity: 0.45;
 }
 
+/* Happening now: the time gets Dot's orange "unread" tag */
 .agenda-event.now .agenda-time {
-    opacity: 1;
-    color: var(--color-accent);
-    font-weight: bold;
+    justify-self: start;
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-radius: 4px;
+    padding: 0 6px;
 }
 
 .agenda-event.now .agenda-title {
-    font-weight: bold;
+    font-weight: 600;
 }
 
 .agenda-message {
-    margin: 0 0 0.6rem 0;
-    font-size: 0.9rem;
-    opacity: 0.7;
+    margin: 0 0 12px;
+    font-size: 14px;
+    color: var(--muted);
 }
 
 .agenda-input {
     width: 100%;
-    padding: 8px;
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid transparent;
-    border-radius: 4px;
+    padding: 8px 14px;
+    background: transparent;
+    border: 1.5px solid var(--ink);
+    border-radius: 999px;
     color: inherit;
-    font-family: monospace;
+    font-family: var(--mono);
+    font-size: 12px;
     box-sizing: border-box;
+    outline: none;
 }
 
-body.light .agenda-input {
-    background: rgba(0, 0, 0, 0.05);
+.agenda-input:focus {
+    border-color: var(--accent);
 }

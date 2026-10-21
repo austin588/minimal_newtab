@@ -4,8 +4,8 @@ const settings =
 document.body.style.backgroundColor = window.matchMedia(
   "(prefers-color-scheme: dark)",
 ).matches
-  ? "#121212"
-  : "#f0f0f0";
+  ? "#0f0e0d"
+  : "#ffffff";
 
 // Paint the last background in the first frame instead of waiting for main.js
 // (only on pages that load utils.js, i.e. the new tab)

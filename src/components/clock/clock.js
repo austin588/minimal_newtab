@@ -19,10 +19,15 @@ function updateClock() {
     let hours12 = hours24 % 12;
     if (hours12 === 0) hours12 = 12;
     const meridiem = isPM ? "PM" : "AM";
-    document.getElementById('clock').innerHTML = `${String(hours12)}:${mins}<span class=\"ampm\">${meridiem}</span>`;
+    document.getElementById('clock').innerHTML = `${String(hours12)}<b class="colon">:</b>${mins}<span class="ampm">${meridiem}</span>`;
   } else {
     const hours = String(now.getHours()).padStart(2, '0');
-    document.getElementById('clock').textContent = `${hours}:${mins}`;
+    document.getElementById('clock').innerHTML = `${hours}<b class="colon">:</b>${mins}`;
+  }
+
+  const date = document.getElementById('today-date');
+  if (date) {
+    date.textContent = now.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
   }
 }
 

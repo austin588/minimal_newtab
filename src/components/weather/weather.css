@@ -1,5 +1,4 @@
 .weather {
-    font-size: 1.4rem;
-    margin-bottom: 2rem;
-    color: inherit;
+    font-size: 14px;
+    color: var(--muted);
 }

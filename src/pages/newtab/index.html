@@ -22,6 +22,7 @@
             href="../../assets/favicons/favicon-16x16.png"
         />
         <link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+        <link rel="stylesheet" href="../../assets/fonts/fonts.css" />
         <link rel="stylesheet" href="style.css" />
         <link rel="stylesheet" href="../../components/clock/clock.css" />
         <link rel="stylesheet" href="../../components/weather/weather.css" />
@@ -34,8 +35,10 @@
         <link rel="stylesheet" href="../../components/agenda/agenda.css" />
         <link rel="stylesheet" href="../../components/nextCall/nextCall.css" />
         <link rel="stylesheet" href="../../components/scratchpad/scratchpad.css" />
+        <link rel="stylesheet" href="../../components/quote/quote.css" />
         <script src="../../shared/defaultSettings.js"></script>
         <script src="../../shared/utils.js"></script>
+        <script src="../../shared/stoicQuotes.js"></script>
     </head>
 
     <body>
@@ -43,16 +46,26 @@
         <div id="sidebar" class="sidebar minimised"></div>
         <div class="top-right" id="top-right"></div>
 
-        <div class="clock" id="clock"></div>
-        <div class="weather" id="weather"></div>
-        <div class="next-call hidden" id="next-call"></div>
-        <div class="columns" id="columns">
-            <div class="column" id="bookmarks-column">
-                <h3>Bookmarks</h3>
-                <div class="shortcuts" id="shortcuts"></div>
+        <main class="page">
+            <header class="mast">
+                <div class="clock" id="clock"></div>
+                <div class="mast-right">
+                    <div class="next-call hidden" id="next-call"></div>
+                    <div class="mast-meta">
+                        <div class="today-date" id="today-date"></div>
+                        <div class="weather" id="weather"></div>
+                    </div>
+                </div>
+            </header>
+            <figure class="quote" id="quote"></figure>
+            <div class="columns" id="columns">
+                <div class="column" id="bookmarks-column">
+                    <h3>Bookmarks</h3>
+                    <div class="shortcuts" id="shortcuts"></div>
+                </div>
+                <div class="column" id="agenda-column"></div>
             </div>
-            <div class="column" id="agenda-column"></div>
-        </div>
+        </main>
 
         <div class="customize" id="customize" title="customize">
             <span class="customize-icon"></span>

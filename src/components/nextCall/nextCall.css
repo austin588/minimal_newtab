@@ -1,11 +1,14 @@
+/* A pill under the date, like Dot's search and status chips */
 .next-call {
     display: flex;
-    align-items: baseline;
-    justify-content: center;
-    gap: 0.6rem;
-    max-width: min(900px, 100% - 4rem);
-    margin-bottom: 1.2rem;
-    font-size: 1.1rem;
+    align-items: center;
+    gap: 8px;
+    max-width: min(560px, 60vw);
+    border: 1.5px solid var(--ink);
+    border-radius: 999px;
+    padding: 4px 5px 4px 14px;
+    font-size: 14px;
+    line-height: 1.4;
 }
 
 .next-call.hidden {
@@ -13,11 +16,15 @@
 }
 
 .next-call-label {
-    opacity: 0.6;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
 .next-call-title {
-    font-weight: bold;
+    font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -25,37 +32,39 @@
 }
 
 .next-call-when {
-    opacity: 0.6;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
     white-space: nowrap;
 }
 
 .next-call-join {
-    align-self: center;
-    padding: 1px 10px;
-    border: 1px solid var(--color-accent);
-    border-radius: 4px;
-    color: var(--color-accent);
+    flex: none;
+    border: 1.5px solid var(--accent);
+    border-radius: 999px;
+    padding: 1px 12px;
+    color: var(--accent);
     text-decoration: none;
-    font-size: 0.9rem;
+    font-size: 13px;
+    font-weight: 600;
     white-space: nowrap;
 }
 
 .next-call-join:hover {
-    background-color: var(--hover-bg);
+    background: var(--accent);
+    color: var(--accent-ink);
 }
 
 /* Starting within a couple of minutes, or underway: make joining obvious */
+.next-call.live {
+    border-color: var(--accent);
+}
+
 .next-call.live .next-call-when {
-    opacity: 1;
-    color: var(--color-accent);
+    color: var(--accent);
 }
 
 .next-call.live .next-call-join {
-    background-color: var(--color-accent);
-    color: #121212;
-    font-weight: bold;
-}
-
-body.light .next-call.live .next-call-join {
-    color: #fff;
+    background: var(--accent);
+    color: var(--accent-ink);
 }
