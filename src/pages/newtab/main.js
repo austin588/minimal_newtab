@@ -6,7 +6,6 @@ import { renderSidebar } from "../../components/sidebar/sidebar.js";
 import { renderUnsplashBackground } from "../../components/unsplash/unsplash.js";
 import { renderAgenda } from "../../components/agenda/agenda.js";
 import { renderNextCall } from "../../components/nextCall/nextCall.js";
-import { renderTodo } from "../../widgets/todo.js";
 import { renderScratchpad } from "../../components/scratchpad/scratchpad.js";
 
 if (localStorage.getItem("settings") === null) {
@@ -75,12 +74,6 @@ if (settings.bookmarks) {
   renderBookmarks(settings);
 } else {
   document.getElementById("bookmarks-column").style.display = "none";
-}
-
-if (settings.todoColumn) {
-  document.getElementById("todo-column").append(renderTodo());
-} else {
-  document.getElementById("todo-column").style.display = "none";
 }
 
 if (settings.calendarColumn) {

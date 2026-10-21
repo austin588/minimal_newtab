@@ -59,7 +59,6 @@ document.addEventListener("DOMContentLoaded", () => {
     "bookmarks",
     "bookmarkFolder",
     "expandBookmarks",
-    "todoColumn",
     "calendarColumn",
     "calendarIcsUrl",
     "topRight",
@@ -154,9 +153,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   if (settings["expandBookmarks"]) {
     document.getElementById("expand-bookmarks").checked = true;
-  }
-  if (settings["todoColumn"]) {
-    document.getElementById("show-todoColumn").checked = true;
   }
   if (settings["calendarColumn"]) {
     document.getElementById("show-calendarColumn").checked = true;
