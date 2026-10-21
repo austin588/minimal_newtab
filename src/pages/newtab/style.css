@@ -43,6 +43,9 @@ body.dark {
     --body: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
     --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
     --gutter: clamp(16px, 3vw, 40px);
+    /* Shape knobs the looks change: pill corners and the heavy rule */
+    --pill: 999px;
+    --heavy: 2.5px;
 }
 
 body, html {

@@ -3,7 +3,7 @@
     flex: none;
     margin: 0;
     padding: 18px 0;
-    border-top: 2.5px solid var(--ink);
+    border-top: var(--heavy) solid var(--ink);
     border-bottom: 1px solid var(--rule);
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;

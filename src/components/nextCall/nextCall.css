@@ -5,7 +5,7 @@
     gap: 8px;
     max-width: min(560px, 60vw);
     border: 1.5px solid var(--ink);
-    border-radius: 999px;
+    border-radius: var(--pill);
     padding: 4px 5px 4px 14px;
     font-size: 14px;
     line-height: 1.4;
@@ -41,7 +41,7 @@
 .next-call-join {
     flex: none;
     border: 1.5px solid var(--accent);
-    border-radius: 999px;
+    border-radius: var(--pill);
     padding: 1px 12px;
     color: var(--accent);
     text-decoration: none;

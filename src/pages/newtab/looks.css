@@ -1,0 +1,353 @@
+/* Dot's looks for the new tab: same layout, different skin. looks.js sets
+   <html data-ui="...">; "dot" is the default in style.css and needs no rules.
+   Each look has light and dark tokens that follow the theme toggle (body.light /
+   body.dark) and, before main.js runs, the system setting. */
+
+/* Paper: warm cream, serif headlines, forest green */
+:root[data-ui="paper"] {
+    --display: "Fraunces", Georgia, serif;
+    --body: "DM Sans", "Helvetica Neue", Arial, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    --heavy: 1.5px;
+}
+:root[data-ui="paper"],
+[data-ui="paper"] body.light {
+    --bg: #f6f1e7;
+    --ink: #2b2118;
+    --muted: #7a6a58;
+    --faint: #c2b49f;
+    --rule: #e4d9c6;
+    --hover: #efe7d8;
+    --accent: #2f6f4f;
+    --accent-ink: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+    :root[data-ui="paper"] {
+        --bg: #1c1814;
+        --ink: #efe6d8;
+        --muted: #a8998a;
+        --faint: #5e544a;
+        --rule: #342d26;
+        --hover: #26211b;
+        --accent: #6fbf8f;
+        --accent-ink: #10170f;
+    }
+}
+[data-ui="paper"] body.dark {
+    --bg: #1c1814;
+    --ink: #efe6d8;
+    --muted: #a8998a;
+    --faint: #5e544a;
+    --rule: #342d26;
+    --hover: #26211b;
+    --accent: #6fbf8f;
+    --accent-ink: #10170f;
+}
+
+/* Terminal: monospace everything, green */
+:root[data-ui="terminal"] {
+    --display: "JetBrains Mono", ui-monospace, Menlo, monospace;
+    --body: "JetBrains Mono", ui-monospace, Menlo, monospace;
+    --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+    --pill: 3px;
+}
+:root[data-ui="terminal"],
+[data-ui="terminal"] body.light {
+    --bg: #f4f4ef;
+    --ink: #111111;
+    --muted: #666660;
+    --faint: #aaaaa2;
+    --rule: #ddddd5;
+    --hover: #ebebe4;
+    --accent: #0a8f3c;
+    --accent-ink: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+    :root[data-ui="terminal"] {
+        --bg: #0b0d0b;
+        --ink: #d8f5d0;
+        --muted: #7fa07a;
+        --faint: #3c4a3a;
+        --rule: #1d261c;
+        --hover: #121812;
+        --accent: #39ff88;
+        --accent-ink: #04120a;
+    }
+}
+[data-ui="terminal"] body.dark {
+    --bg: #0b0d0b;
+    --ink: #d8f5d0;
+    --muted: #7fa07a;
+    --faint: #3c4a3a;
+    --rule: #1d261c;
+    --hover: #121812;
+    --accent: #39ff88;
+    --accent-ink: #04120a;
+}
+
+/* Swiss: grid-sharp, square corners, red */
+:root[data-ui="swiss"] {
+    --display: "Inter Tight", "Helvetica Neue", Arial, sans-serif;
+    --body: "Inter Tight", "Helvetica Neue", Arial, sans-serif;
+    --pill: 0;
+    --heavy: 4px;
+}
+:root[data-ui="swiss"],
+[data-ui="swiss"] body.light {
+    --bg: #ffffff;
+    --ink: #000000;
+    --muted: #6b6b6b;
+    --faint: #bdbdbd;
+    --rule: #e6e6e6;
+    --hover: #f3f3f3;
+    --accent: #e10600;
+    --accent-ink: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+    :root[data-ui="swiss"] {
+        --bg: #0a0a0a;
+        --ink: #ffffff;
+        --muted: #9a9a9a;
+        --faint: #4a4a4a;
+        --rule: #262626;
+        --hover: #161616;
+        --accent: #ff3b30;
+        --accent-ink: #ffffff;
+    }
+}
+[data-ui="swiss"] body.dark {
+    --bg: #0a0a0a;
+    --ink: #ffffff;
+    --muted: #9a9a9a;
+    --faint: #4a4a4a;
+    --rule: #262626;
+    --hover: #161616;
+    --accent: #ff3b30;
+    --accent-ink: #ffffff;
+}
+
+/* Soft: lavender, rounded, light lines instead of black rules */
+:root[data-ui="soft"] {
+    --display: "DM Sans", "Helvetica Neue", Arial, sans-serif;
+    --body: "DM Sans", "Helvetica Neue", Arial, sans-serif;
+    --heavy: 1px;
+}
+:root[data-ui="soft"],
+[data-ui="soft"] body.light {
+    --bg: #f4f3fb;
+    --ink: #2a2840;
+    --muted: #7d7a95;
+    --faint: #c4c1d8;
+    --rule: #e3e1f0;
+    --hover: #ebe9f7;
+    --accent: #7c5cff;
+    --accent-ink: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+    :root[data-ui="soft"] {
+        --bg: #15141f;
+        --ink: #ecebf7;
+        --muted: #9d9ab8;
+        --faint: #4a4766;
+        --rule: #262438;
+        --hover: #1d1c2b;
+        --accent: #a48bff;
+        --accent-ink: #120d26;
+    }
+}
+[data-ui="soft"] body.dark {
+    --bg: #15141f;
+    --ink: #ecebf7;
+    --muted: #9d9ab8;
+    --faint: #4a4766;
+    --rule: #262438;
+    --hover: #1d1c2b;
+    --accent: #a48bff;
+    --accent-ink: #120d26;
+}
+
+/* Midnight: always dark, navy and cyan */
+:root[data-ui="midnight"] {
+    --display: "Space Grotesk", "Helvetica Neue", Arial, sans-serif;
+    --body: "Space Grotesk", "Helvetica Neue", Arial, sans-serif;
+    --heavy: 1.5px;
+}
+:root[data-ui="midnight"],
+[data-ui="midnight"] body.light {
+    --bg: #0d1321;
+    --ink: #e6edf7;
+    --muted: #8b97ad;
+    --faint: #3d4a63;
+    --rule: #1e2a40;
+    --hover: #141d30;
+    --accent: #3dd6f5;
+    --accent-ink: #04131a;
+}
+@media (prefers-color-scheme: dark) {
+    :root[data-ui="midnight"] {
+        --bg: #0d1321;
+        --ink: #e6edf7;
+        --muted: #8b97ad;
+        --faint: #3d4a63;
+        --rule: #1e2a40;
+        --hover: #141d30;
+        --accent: #3dd6f5;
+        --accent-ink: #04131a;
+    }
+}
+[data-ui="midnight"] body.dark {
+    --bg: #0d1321;
+    --ink: #e6edf7;
+    --muted: #8b97ad;
+    --faint: #3d4a63;
+    --rule: #1e2a40;
+    --hover: #141d30;
+    --accent: #3dd6f5;
+    --accent-ink: #04131a;
+}
+
+/* Newsprint: serif, near-square, ink blue */
+:root[data-ui="newsprint"] {
+    --display: "Newsreader", Georgia, serif;
+    --body: "Newsreader", Georgia, serif;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    --pill: 2px;
+}
+:root[data-ui="newsprint"],
+[data-ui="newsprint"] body.light {
+    --bg: #fbfaf7;
+    --ink: #111111;
+    --muted: #5f5f5a;
+    --faint: #b5b3ab;
+    --rule: #dedcd4;
+    --hover: #f2f0ea;
+    --accent: #1d4ed8;
+    --accent-ink: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+    :root[data-ui="newsprint"] {
+        --bg: #121211;
+        --ink: #f1efe8;
+        --muted: #a3a19a;
+        --faint: #4d4c48;
+        --rule: #2a2927;
+        --hover: #1b1b19;
+        --accent: #7aa2ff;
+        --accent-ink: #0a1020;
+    }
+}
+[data-ui="newsprint"] body.dark {
+    --bg: #121211;
+    --ink: #f1efe8;
+    --muted: #a3a19a;
+    --faint: #4d4c48;
+    --rule: #2a2927;
+    --hover: #1b1b19;
+    --accent: #7aa2ff;
+    --accent-ink: #0a1020;
+}
+
+/* Studio: blush, magenta, chunky lines */
+:root[data-ui="studio"] {
+    --display: "Space Grotesk", "Helvetica Neue", Arial, sans-serif;
+    --body: "DM Sans", "Helvetica Neue", Arial, sans-serif;
+    --heavy: 3.5px;
+}
+:root[data-ui="studio"],
+[data-ui="studio"] body.light {
+    --bg: #fff7f2;
+    --ink: #1a1020;
+    --muted: #806f7d;
+    --faint: #cdbfc8;
+    --rule: #f0e1e4;
+    --hover: #fbece6;
+    --accent: #e5197e;
+    --accent-ink: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+    :root[data-ui="studio"] {
+        --bg: #160d14;
+        --ink: #fbeef4;
+        --muted: #b398a8;
+        --faint: #574152;
+        --rule: #2b1c27;
+        --hover: #1f141c;
+        --accent: #ff4fa3;
+        --accent-ink: #1a0410;
+    }
+}
+[data-ui="studio"] body.dark {
+    --bg: #160d14;
+    --ink: #fbeef4;
+    --muted: #b398a8;
+    --faint: #574152;
+    --rule: #2b1c27;
+    --hover: #1f141c;
+    --accent: #ff4fa3;
+    --accent-ink: #1a0410;
+}
+
+/* Per-look touches on the clock and rules */
+[data-ui="paper"] .clock {
+    letter-spacing: -0.03em;
+}
+
+[data-ui="terminal"] body {
+    font-size: 14px;
+}
+
+[data-ui="terminal"] .clock {
+    letter-spacing: -0.06em;
+}
+
+[data-ui="terminal"] .quote-text,
+[data-ui="terminal"] .column h3 {
+    font-weight: 700;
+    letter-spacing: -0.03em;
+}
+
+[data-ui="swiss"] .clock {
+    letter-spacing: -0.06em;
+}
+
+[data-ui="soft"] .quote,
+[data-ui="soft"] .next-call:not(.live) {
+    border-top-color: var(--rule);
+}
+
+[data-ui="soft"] .next-call:not(.live) {
+    border-color: var(--rule);
+}
+
+[data-ui="soft"] .clock,
+[data-ui="midnight"] .clock,
+[data-ui="studio"] .clock {
+    font-weight: 700;
+}
+
+[data-ui="midnight"] .quote {
+    border-top-color: var(--faint);
+}
+
+[data-ui="midnight"] .next-call:not(.live) {
+    border-color: var(--faint);
+}
+
+[data-ui="midnight"] .clock .colon {
+    text-shadow: 0 0 18px var(--accent);
+}
+
+[data-ui="newsprint"] body {
+    font-size: 16px;
+}
+
+[data-ui="newsprint"] .clock,
+[data-ui="newsprint"] .quote-text {
+    font-style: italic;
+}
+
+/* Newsprint's double rule: a thin line, a gap, then the ink line */
+[data-ui="newsprint"] .quote {
+    border-top: 1px solid var(--ink);
+    box-shadow: inset 0 3px 0 -1px var(--bg), inset 0 4px 0 -1px var(--ink);
+}

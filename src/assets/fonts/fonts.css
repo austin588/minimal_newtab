@@ -1,26 +1,10 @@
-/* Latin subsets of Dot's fonts, bundled so the new tab paints without a network fetch */
-@font-face {
-    font-family: 'Instrument Sans';
-    font-style: normal;
-    font-weight: 400;
-    font-display: block;
-    src: url('InstrumentSans.woff2') format('woff2');
-    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
+/* Latin subsets of the fonts Dot's looks use, bundled so the new tab paints
+   without a network fetch. Variable fonts declare their full weight range. */
 
 @font-face {
     font-family: 'Instrument Sans';
     font-style: normal;
-    font-weight: 500;
-    font-display: block;
-    src: url('InstrumentSans.woff2') format('woff2');
-    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-
-@font-face {
-    font-family: 'Instrument Sans';
-    font-style: normal;
-    font-weight: 600;
+    font-weight: 100 900;
     font-display: block;
     src: url('InstrumentSans.woff2') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
@@ -29,44 +13,89 @@
 @font-face {
     font-family: 'JetBrains Mono';
     font-style: normal;
+    font-weight: 100 900;
+    font-display: block;
+    src: url('JetBrainsMono.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'Schibsted Grotesk';
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: block;
+    src: url('SchibstedGrotesk.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'DM Sans';
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: block;
+    src: url('DMSans.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'Fraunces';
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: block;
+    src: url('Fraunces.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'IBM Plex Mono';
+    font-style: normal;
     font-weight: 400;
     font-display: block;
-    src: url('JetBrainsMono.woff2') format('woff2');
+    src: url('IBMPlexMono.woff2') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
-    font-family: 'JetBrains Mono';
+    font-family: 'IBM Plex Mono';
     font-style: normal;
     font-weight: 500;
     font-display: block;
-    src: url('JetBrainsMono.woff2') format('woff2');
+    src: url('IBMPlexMono-2.woff2') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
-    font-family: 'Schibsted Grotesk';
+    font-family: 'Inter Tight';
     font-style: normal;
-    font-weight: 500;
+    font-weight: 100 900;
     font-display: block;
-    src: url('SchibstedGrotesk.woff2') format('woff2');
+    src: url('InterTight.woff2') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
-    font-family: 'Schibsted Grotesk';
-    font-style: normal;
-    font-weight: 700;
+    font-family: 'Newsreader';
+    font-style: italic;
+    font-weight: 100 900;
     font-display: block;
-    src: url('SchibstedGrotesk.woff2') format('woff2');
+    src: url('Newsreader-Italic.woff2') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
-    font-family: 'Schibsted Grotesk';
+    font-family: 'Newsreader';
     font-style: normal;
-    font-weight: 800;
+    font-weight: 100 900;
     font-display: block;
-    src: url('SchibstedGrotesk.woff2') format('woff2');
+    src: url('Newsreader.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'Space Grotesk';
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: block;
+    src: url('SpaceGrotesk.woff2') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }

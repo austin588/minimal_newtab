@@ -1238,3 +1238,61 @@ dropTargets.forEach((target) => {
     handleImportFile(file);
   });
 });
+
+// Look picker: one swatch per look, drawn in that look's own colors and font
+function renderLookPicker() {
+  const grid = document.getElementById("look-grid");
+  if (!grid || typeof LOOKS === "undefined") return;
+  const draw = () => {
+    const current = currentLook();
+    grid.replaceChildren(
+      ...LOOKS.map((look) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "look";
+        button.title = look.note;
+        button.setAttribute("aria-pressed", String(look.id === current));
+
+        const swatch = document.createElement("span");
+        swatch.className = "look-sw";
+        swatch.style.cssText = `background:${look.bg};color:${look.ink};border:1px solid ${look.rule};border-radius:${Math.min(look.r, 8)}px;font-family:'${look.font}',sans-serif`;
+        const time = document.createElement("b");
+        time.style.fontStyle = look.italic ? "italic" : "normal";
+        time.append("10");
+        const colon = document.createElement("span");
+        colon.style.color = look.acc;
+        colon.textContent = ":";
+        time.append(colon, "52");
+        const bar = document.createElement("span");
+        bar.className = "look-bar";
+        [
+          ["38%", look.ink],
+          ["18%", look.acc],
+          ["24%", look.rule],
+        ].forEach(([width, color]) => {
+          const line = document.createElement("i");
+          line.style.cssText = `width:${width};background:${color};border-radius:${Math.min(look.r, 4)}px`;
+          bar.append(line);
+        });
+        swatch.append(time, bar);
+
+        const name = document.createElement("span");
+        name.className = "look-name";
+        name.textContent = look.name;
+        const note = document.createElement("span");
+        note.className = "look-note";
+        note.textContent = look.note;
+
+        button.append(swatch, name, note);
+        button.addEventListener("click", () => {
+          applyLook(look.id);
+          draw();
+        });
+        return button;
+      }),
+    );
+  };
+  draw();
+}
+
+renderLookPicker();

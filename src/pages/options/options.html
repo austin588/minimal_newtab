@@ -4,8 +4,10 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>New Tab Settings</title>
+        <link rel="stylesheet" href="../../assets/fonts/fonts.css" />
         <link rel="stylesheet" href="options.css" />
         <script src="../../shared/defaultSettings.js"></script>
+        <script src="../../shared/looks.js"></script>
     </head>
 
     <body class="options">
@@ -194,6 +196,13 @@
 
                 <div id="appearance" class="options-panel">
                     <h2>Appearance</h2>
+                    <div class="setting-row look-row">
+                        <label>Look:</label>
+                        <p class="look-hint">
+                            Same layout, different style. Changes right away.
+                        </p>
+                        <div class="look-grid" id="look-grid" role="group" aria-label="Look"></div>
+                    </div>
                     <div class="setting-row segmented-control-container">
                         <label>Theme:</label>
                         <div class="segmented-control">

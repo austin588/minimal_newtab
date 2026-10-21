@@ -12,7 +12,7 @@
     color: var(--muted);
     text-decoration: none;
     border: 1.5px solid var(--rule);
-    border-radius: 999px;
+    border-radius: var(--pill);
     padding: 2px 12px;
 }
 
@@ -85,7 +85,7 @@
     font-weight: 500;
     color: var(--muted);
     border: 1px solid var(--rule);
-    border-radius: 999px;
+    border-radius: var(--pill);
     padding: 0 10px;
 }
 
@@ -123,7 +123,7 @@
     padding: 8px 14px;
     background: transparent;
     border: 1.5px solid var(--ink);
-    border-radius: 999px;
+    border-radius: var(--pill);
     color: inherit;
     font-family: var(--mono);
     font-size: 12px;
